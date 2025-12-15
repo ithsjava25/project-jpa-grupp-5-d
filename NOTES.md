@@ -7,17 +7,14 @@ Many - To - Many
 Användare - Favoriter
 
 
-Movie
+Movie ----
 - id (PK)
 - Title
-- Director_ID (FK) *****
-- Actor_ID (FK) ******
 - Release date
 - Length
 - Ranking (avg User rating)
-- Genre (FK genre)
-- Country (FK country)
-- Language (FK country)
+- Country (FK language)
+- Language_id
 
 Movie_genre
 - Movie_id
@@ -25,48 +22,50 @@ Movie_genre
 
 Movie_actor
 - movie_id
-- director_id
 - actor_id
 
-User
+Movie_director
+- movie_id
+- actor_id
+
+User -----
 - id (PK)
 - firstName
 - lastName
 - Password
-- Favorites
-- Rating
 
-Actor
+User_favorites
+- User_id
+- Movie_id
+
+User_rating
+- user_id
+- movie_id
+- rating
+
+Actor -----
 - id (PK)
 - firstName
 - lastName
 - Country (FK country)
-- Language (FK country)
 
-Actor_language
-- actor_id
-- language_id
-
-Director
+Director -----
 - id (PK)
 - firstName
 - lastName
 - Country (FK country)
-- Language (FK country)
 
-Director_language
-- Director_id
-- Language_id
-
-Genre
+Genre (enum???)
 - id (PK)
-- Genre
+- genreName
 
-Country
+Country (enum???)
 - country_id
-- Country
+- countryName
+
+Language (enum???)
 - language_id
-- Language
+- languageName
 
 
 
@@ -80,3 +79,5 @@ CLI Logic
 -
 
 
+Domändriven design
+Aggregates
