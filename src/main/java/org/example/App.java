@@ -1,7 +1,19 @@
 package org.example;
 
+import jakarta.persistence.PersistenceConfiguration;
+import org.hibernate.jpa.HibernatePersistenceConfiguration;
+
 public class App {
     public static void main(String[] args) {
-        System.out.println("Hello There!");
+
+
+        final PersistenceConfiguration cfg = new HibernatePersistenceConfiguration( "emf" )
+            .jdbcUrl( "jdbc:mysql://localhost:3306/ProjectHT2025" )
+            .jdbcUsername( "root" )
+            .jdbcPassword( "root" )
+            .property("hibernate.hbm2ddl.auto","update")
+            .property("hibernate.show_sql","true")
+            .property("hibernate.format_sql","true")
+            .property("hibernate.highlight_sql","true");
     }
 }
