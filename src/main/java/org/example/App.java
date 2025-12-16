@@ -4,7 +4,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceConfiguration;
-import nonapi.io.github.classgraph.reflection.ReflectionUtils;
 import org.example.pojo.*;
 import org.hibernate.jpa.HibernatePersistenceConfiguration;
 
