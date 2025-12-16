@@ -3,14 +3,8 @@ package org.example;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceConfiguration;
-import org.example.jpaimpl.UserRepoJpa;
 import org.example.pojo.*;
-import org.example.repo.UserRepo;
-import org.hibernate.annotations.processing.SQL;
 import org.hibernate.jpa.HibernatePersistenceConfiguration;
-
-import java.lang.reflect.Member;
-import java.sql.SQLException;
 
 public class App {
     public static void main(String[] args) {

@@ -3,6 +3,7 @@ package org.example.pojo;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import org.example.enums.Country;
 
@@ -22,8 +23,7 @@ public class Director {
     private Country country;
 
     public Director(){}
-    public Director(long id, String directorName, Country country){
-        this.id = id;
+    public Director(String directorName, Country country){
         this.directorName = directorName;
         this.country = country;
     }
@@ -36,6 +36,14 @@ public class Director {
     public Country getCountry(){return country;}
     public void setCountry(Country country){this.country = country;}
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Director director)) return false;
+        return Objects.equals(id, director.id) && Objects.equals(directorName, director.directorName) && Objects.equals(movies, director.movies) && country == director.country;
+    }
 
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, directorName, movies, country);
+    }
 }

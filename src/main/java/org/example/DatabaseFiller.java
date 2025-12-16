@@ -1,6 +1,7 @@
 package org.example;
 
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.example.enums.Country;
 import org.example.enums.Language;
 import org.example.jpaimpl.*;
@@ -72,6 +73,7 @@ public class DatabaseFiller {
         actorRepo.addActor("Naomi Watts", Country.AUSTRALIA);
     }
 
+    @Transactional
     public void seedDirectors() {
         DirectorRepoJpa directorRepo = new DirectorRepoJpa(em);
 
@@ -97,6 +99,7 @@ public class DatabaseFiller {
         directorRepo.addDirector("Greta Gerwig", Country.USA);
     }
 
+    @Transactional
     public void seedMovies() {
         MovieRepoJpa movieRepo = new MovieRepoJpa(em);
 
@@ -121,7 +124,6 @@ public class DatabaseFiller {
             {"Spider-Man: Homecoming", LocalDate.parse("2017-07-07"), 133, Country.USA, Language.ENGLISH},
             {"Captain America: Civil War", LocalDate.parse("2016-05-06"), 147, Country.USA, Language.ENGLISH},
             {"Avengers: Infinity War", LocalDate.parse("2018-04-27"), 149, Country.USA, Language.ENGLISH},
-
             {"The Shadow Realm", LocalDate.parse("2021-10-10"), 142, Country.UK, Language.ENGLISH},
             {"Mystic Horizon", LocalDate.parse("2020-03-22"), 128, Country.CANADA, Language.ENGLISH},
             {"Cyberpunk Legacy", LocalDate.parse("2019-11-05"), 135, Country.USA, Language.ENGLISH},
@@ -156,7 +158,7 @@ public class DatabaseFiller {
             {"Mystic Eclipse", LocalDate.parse("2021-07-07"), 135, Country.CANADA, Language.ENGLISH}
         };
 
-
+        int i = 0;
         for (Object[] m : movies) {
             movieRepo.addMovie(
                 (String) m[0],
@@ -165,6 +167,13 @@ public class DatabaseFiller {
                 (Country) m[3],
                 (Language) m[4]
             );
+
+            i++;
+            if (i % 20 == 0) {
+                em.flush();
+                em.clear();
+            }
+
         }
 
     }
@@ -197,63 +206,71 @@ public class DatabaseFiller {
     public void seedUsers() {
         UserRepoJpa userRepo = new UserRepoJpa(em);
 
-        userRepo.addUser("AliceSmith", "pass123");
-        userRepo.addUser("BobJones", "qwerty");
-        userRepo.addUser("CharlieBrown", "abc123");
-        userRepo.addUser("DavidMiller", "password1");
-        userRepo.addUser("EvaJohnson", "123456");
-        userRepo.addUser("FrankWilson", "letmein");
-        userRepo.addUser("GraceLee", "mypassword");
-        userRepo.addUser("HannahClark", "passw0rd");
-        userRepo.addUser("IanWalker", "admin123");
-        userRepo.addUser("JackHall", "welcome1");
+        String[][] users = {
+            {"AliceSmith", "pass123"},
+            {"BobJones", "qwerty"},
+            {"CharlieBrown", "abc123"},
+            {"DavidMiller", "password1"},
+            {"EvaJohnson", "123456"},
+            {"FrankWilson", "letmein"},
+            {"GraceLee", "mypassword"},
+            {"HannahClark", "passw0rd"},
+            {"IanWalker", "admin123"},
+            {"JackHall", "welcome1"},
 
-        userRepo.addUser("KarenYoung", "hello123");
-        userRepo.addUser("LeoKing", "sunshine");
-        userRepo.addUser("MiaScott", "flower99");
-        userRepo.addUser("NathanAdams", "moonlight");
-        userRepo.addUser("OliviaBaker", "star123");
-        userRepo.addUser("PeterWright", "dragon1");
-        userRepo.addUser("QuinnHarris", "blueSky");
-        userRepo.addUser("RachelGreen", "green123");
-        userRepo.addUser("SamRoberts", "robot2025");
-        userRepo.addUser("TinaEvans", "tiger12");
+            {"KarenYoung", "hello123"},
+            {"LeoKing", "sunshine"},
+            {"MiaScott", "flower99"},
+            {"NathanAdams", "moonlight"},
+            {"OliviaBaker", "star123"},
+            {"PeterWright", "dragon1"},
+            {"QuinnHarris", "blueSky"},
+            {"RachelGreen", "green123"},
+            {"SamRoberts", "robot2025"},
+            {"TinaEvans", "tiger12"},
 
-        userRepo.addUser("UmaCarter", "queen99");
-        userRepo.addUser("VictorMitchell", "viking1");
-        userRepo.addUser("WendyPerez", "wonder12");
-        userRepo.addUser("XanderCooper", "xmen123");
-        userRepo.addUser("YaraReed", "yellow22");
-        userRepo.addUser("ZacharyBell", "zebra99");
-        userRepo.addUser("AmberRussell", "apple12");
-        userRepo.addUser("BrandonWard", "banana34");
-        userRepo.addUser("CaitlynBennett", "catDog1");
-        userRepo.addUser("DerekCook", "delta99");
+            {"UmaCarter", "queen99"},
+            {"VictorMitchell", "viking1"},
+            {"WendyPerez", "wonder12"},
+            {"XanderCooper", "xmen123"},
+            {"YaraReed", "yellow22"},
+            {"ZacharyBell", "zebra99"},
+            {"AmberRussell", "apple12"},
+            {"BrandonWard", "banana34"},
+            {"CaitlynBennett", "catDog1"},
+            {"DerekCook", "delta99"},
 
-        userRepo.addUser("EllaFoster", "echo2025");
-        userRepo.addUser("FelixGray", "falcon1");
-        userRepo.addUser("GabriellaHunt", "galaxy9");
-        userRepo.addUser("HenryJames", "harbor12");
-        userRepo.addUser("IslaKnight", "icecream");
-        userRepo.addUser("JasonLong", "joker99");
-        userRepo.addUser("KylieMorgan", "kangaroo");
-        userRepo.addUser("LiamNelson", "lion123");
-        userRepo.addUser("MeganOwens", "mountain");
-        userRepo.addUser("NoahPerry", "nova99");
+            {"EllaFoster", "echo2025"},
+            {"FelixGray", "falcon1"},
+            {"GabriellaHunt", "galaxy9"},
+            {"HenryJames", "harbor12"},
+            {"IslaKnight", "icecream"},
+            {"JasonLong", "joker99"},
+            {"KylieMorgan", "kangaroo"},
+            {"LiamNelson", "lion123"},
+            {"MeganOwens", "mountain"},
+            {"NoahPerry", "nova99"},
 
-        userRepo.addUser("OlgaQuinn", "olive123");
-        userRepo.addUser("PaulRoss", "panda1");
-        userRepo.addUser("QuincySims", "queenBee");
-        userRepo.addUser("RileyTurner", "river12");
-        userRepo.addUser("SophiaUnderwood", "sunset");
-        userRepo.addUser("ThomasVega", "tornado");
-        userRepo.addUser("UlyssesWhite", "unicorn");
-        userRepo.addUser("VanessaXavier", "volcano");
-        userRepo.addUser("WilliamYoung", "whale99");
-        userRepo.addUser("XimenaZimmer", "xylophone");
+            {"OlgaQuinn", "olive123"},
+            {"PaulRoss", "panda1"},
+            {"QuincySims", "queenBee"},
+            {"RileyTurner", "river12"},
+            {"SophiaUnderwood", "sunset"},
+            {"ThomasVega", "tornado"},
+            {"UlyssesWhite", "unicorn"},
+            {"VanessaXavier", "volcano"},
+            {"WilliamYoung", "whale99"},
+            {"XimenaZimmer", "xylophone"}
+        };
+
+        int i = 0;
+        for (String[] u : users) {
+            userRepo.addUser(u[0], u[1]);
+            i++;
+            if (i % 20 == 0) {
+                em.flush();
+                em.clear();
+            }
+        }
     }
-
-
-
-
 }

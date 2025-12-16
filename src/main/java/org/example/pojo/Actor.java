@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.example.enums.Country;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -49,5 +50,16 @@ public class Actor {
 
     public Set<Movie> getMovies() {
         return movies;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Actor actor)) return false;
+        return Objects.equals(id, actor.id) && Objects.equals(actorName, actor.actorName) && country == actor.country && Objects.equals(movies, actor.movies);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, actorName, country, movies);
     }
 }
