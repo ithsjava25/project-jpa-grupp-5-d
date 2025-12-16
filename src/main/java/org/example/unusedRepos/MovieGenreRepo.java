@@ -1,7 +1,7 @@
 package org.example.unusedRepos;
 
-import org.example.entity.Genre;
-import org.example.entity.Movie;
+import org.example.pojo.Genre;
+import org.example.pojo.Movie;
 
 import java.util.List;
 

@@ -1,7 +1,11 @@
 package org.example;
 
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceConfiguration;
+import org.example.pojo.*;
 import org.hibernate.jpa.HibernatePersistenceConfiguration;
+
+import java.lang.reflect.Member;
 
 public class App {
     public static void main(String[] args) {
@@ -14,6 +18,11 @@ public class App {
             .property("hibernate.hbm2ddl.auto","update")
             .property("hibernate.show_sql","true")
             .property("hibernate.format_sql","true")
-            .property("hibernate.highlight_sql","true");
+            .property("hibernate.highlight_sql","true")
+            .managedClasses(Actor.class, Director.class, Genre.class, Movie.class, User.class, UserRating.class);
+
+
+
+
     }
 }

@@ -1,14 +1,13 @@
 package org.example.repo;
 
-import org.example.entity.User;
+import org.example.pojo.User;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface UserRepo {
 
 
-    boolean addUser(long userId, String firstName, String lastName, String password);
+    boolean addUser(String userName, String password);
 
     boolean uppdatePassword(long userId, String newPassword);
 
@@ -16,7 +15,7 @@ public interface UserRepo {
 
     User create(User user);
 
-    Optional<User> getUserID(int userId);
+    Optional<User> getById(int userId);
 
     Optional<User> getUsername (String userName);
 

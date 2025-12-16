@@ -80,4 +80,7 @@ CLI Logic
 
 
 Domändriven design
+-Som användare ska jag kunna se mina favoriter
+-användare ska kunna rate;a filmer
+- Designa programmet utifrån målet/funktionen/kärn-funktionaliteten i programmet
 Aggregates

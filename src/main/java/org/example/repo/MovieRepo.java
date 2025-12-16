@@ -1,8 +1,8 @@
 package org.example.repo;
 
-import org.example.entity.Actor;
-import org.example.entity.Director;
-import org.example.entity.Movie;
+import org.example.pojo.Actor;
+import org.example.pojo.Director;
+import org.example.pojo.Movie;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,14 +10,14 @@ import java.util.Optional;
 public interface MovieRepo {
 
     //add movie
-    boolean addMovie(long id, String title, String date, String length, int ranking, String country, String language);
+    boolean addMovie(String title, String date, String length, int ranking, String country, String language);
     //update movie???
     //delete movie
     boolean deleteMovie(long id);
 
     List<Movie> getMovies();
 
-    Optional<Movie> getId(Long id);
+    Optional<Movie> getById(Long id);
     //id (PK)
     Optional<Movie>  getTitle(String title);
     //title

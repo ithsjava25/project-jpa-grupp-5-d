@@ -1,6 +1,6 @@
 package org.example.unusedRepos;
 
-import org.example.entity.User;
+import org.example.pojo.User;
 
 import java.util.List;
 
