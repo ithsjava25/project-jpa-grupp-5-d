@@ -1,4 +1,4 @@
-package org.example.repo;
+package org.example.unusedRepos;
 
 import org.example.entity.Movie;
 

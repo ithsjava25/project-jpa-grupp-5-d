@@ -1,6 +1,5 @@
-package org.example.repo;
+package org.example.unusedRepos;
 
-import org.example.entity.Actor;
 import org.example.entity.Movie;
 
 import java.util.List;
