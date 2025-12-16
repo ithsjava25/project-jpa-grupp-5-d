@@ -5,5 +5,6 @@ public enum Language {
     SWEDISH,
     FRENCH,
     SPANISH,
-    DANISH;
+    DANISH,
+    GERMAN;
 }

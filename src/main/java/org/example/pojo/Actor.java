@@ -1,6 +1,7 @@
 package org.example.pojo;
 
 import jakarta.persistence.*;
+import org.example.enums.Country;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +15,8 @@ public class Actor {
 
     private String actorName;
 
-    private String country;
+    @Enumerated(EnumType.STRING)
+    private Country country;
 
     @ManyToMany(mappedBy = "actors")
     private Set<Movie> movies = new HashSet<>();
@@ -37,11 +39,11 @@ public class Actor {
         return actorName;
     }
 
-  public void setCountry(String country){
+    public void setCountry(Country country){
         this.country = country;
   }
 
-    public String getCountry() {
+    public Country getCountry() {
         return country;
     }
 

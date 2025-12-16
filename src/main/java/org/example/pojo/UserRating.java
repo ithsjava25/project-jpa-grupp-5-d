@@ -3,6 +3,7 @@ package org.example.pojo;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "user_rating")
 public class UserRating {
 
         @Id

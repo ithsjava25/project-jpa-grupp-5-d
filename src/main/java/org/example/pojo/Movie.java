@@ -14,7 +14,10 @@ public class Movie {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private long id;
     private String title;
+
+    @Column (name = "release_date")
     private LocalDate releaseDate;
+
     private int length;
     private float ranking;
 

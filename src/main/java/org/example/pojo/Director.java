@@ -31,10 +31,10 @@ public class Director {
     public void setDirectorID(long id){this.id = id;}
 
     public String getDirectorName(){return directorName;}
-    public void setDirectorName(){this.directorName = directorName;}
+    public void setDirectorName(String directorName){this.directorName = directorName;}
 
     public Country getCountry(){return country;}
-    public void setCountry(){this.country = country;}
+    public void setCountry(Country country){this.country = country;}
 
 
 

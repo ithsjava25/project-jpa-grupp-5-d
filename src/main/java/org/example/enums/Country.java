@@ -7,5 +7,12 @@ public enum Country {
     FRANCE,
     SPAIN,
     DENMARK,
+    AUSTRALIA,
+    GERMANY,
+    ROMANIA,
+    ISRAEL,
+    NEW_ZEALAND,
+    TAIWAN,
+    MEXICO,
     UK;
 }
