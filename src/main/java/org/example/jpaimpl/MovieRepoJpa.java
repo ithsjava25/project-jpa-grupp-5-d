@@ -22,7 +22,7 @@ public class MovieRepoJpa implements MovieRepo {
 
     @Override
     public Movie addMovie(String title, LocalDate date, int length, Country country, Language language) {
-        Optional<Movie> existing = getTitle(title);
+        Optional<Movie> existing = findByTitle(title);
 
         if (existing.isPresent()) {
             Movie movie = existing.get();
@@ -70,7 +70,7 @@ public class MovieRepoJpa implements MovieRepo {
     }
 
     @Override
-    public Optional<Movie> getTitle(String title) {
+    public Optional<Movie> findByTitle(String title) {
         if (title == null) return Optional.empty();
 
         return em.createQuery(
@@ -113,14 +113,12 @@ public class MovieRepoJpa implements MovieRepo {
 
     @Override
     public List<Movie> getMovieByRanking(int minRank, int maxRank) {
-        if (minRank < 0 || minRank > 5 || maxRank < 0 || maxRank > 5) return List.of();
-
         return em.createQuery(
-            "select m from Movie m where m.ranking between :min and :max", Movie.class)
+                "SELECT ur.movie FROM UserRating ur WHERE ur.rating BETWEEN :min AND :max",
+                Movie.class)
             .setParameter("min", minRank)
             .setParameter("max", maxRank)
             .getResultList();
-
     }
 
     @Override
@@ -148,9 +146,11 @@ public class MovieRepoJpa implements MovieRepo {
 
     @Override
     public List<Movie> getByActor(Actor actor) {
-        return em.createQuery("" +
-            "select m from Movie m where m.actor = :actor", Movie.class)
+        return em.createQuery(
+                "SELECT m FROM Movie m JOIN m.actors a WHERE a = :actor",
+                Movie.class)
             .setParameter("actor", actor)
             .getResultList();
+
     }
 }

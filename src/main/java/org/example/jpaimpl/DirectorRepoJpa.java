@@ -19,7 +19,7 @@ public class DirectorRepoJpa implements DirectorRepo {
 
     @Override
     public Director addDirector(String name, Country country) {
-        Optional<Director> existing = getName(name);
+        Optional<Director> existing = findByName(name);
 
         if (existing.isPresent()) {
             Director director = existing.get();
@@ -52,7 +52,7 @@ public class DirectorRepoJpa implements DirectorRepo {
     }
 
     @Override
-    public Optional<Director> getName(String directorName) {
+    public Optional<Director> findByName(String directorName) {
         return em.createQuery("SELECT d FROM Director d WHERE d.directorName = :name", Director.class)
             .setParameter("name", directorName)
             .getResultStream()
@@ -61,6 +61,15 @@ public class DirectorRepoJpa implements DirectorRepo {
 
     @Override
     public List<Director> getCountry(Country country) {
-        return List.of();
+        if (country == null) {
+            return List.of();
+        }
+
+        return em.createQuery(
+                "SELECT d FROM Director d WHERE d.country = :country",
+                Director.class)
+            .setParameter("country", country)
+            .getResultList();
+
     }
 }

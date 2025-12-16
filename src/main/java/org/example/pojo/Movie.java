@@ -24,7 +24,7 @@ public class Movie {
 
     @ManyToMany
     @JoinTable(
-        name = "movie_actor",
+        name = "Movie_actor",
         joinColumns = @JoinColumn(name = "movie_id"),
         inverseJoinColumns = @JoinColumn(name = "actor_id")
     )
@@ -32,7 +32,7 @@ public class Movie {
 
     @ManyToMany
     @JoinTable(
-        name = "movie_genre",
+        name = "Movie_genre",
         joinColumns = @JoinColumn(name = "movie_id"),
         inverseJoinColumns = @JoinColumn(name = "genre_id")
     )

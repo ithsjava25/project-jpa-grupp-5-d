@@ -23,7 +23,7 @@ public class User {
 
     @ManyToMany
     @JoinTable(
-        name = "user_favorites",
+        name = "User_favorites",
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "movie_id")
     )

@@ -2,12 +2,9 @@ package org.example.jpaimpl;
 
 import jakarta.persistence.EntityManager;
 import org.example.enums.Country;
-import org.example.enums.Language;
 import org.example.pojo.Actor;
-import org.example.pojo.Movie;
 import org.example.repo.ActorRepo;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +19,7 @@ public class ActorRepoJpa implements ActorRepo {
     @Override
     public Actor addActor(String name, Country country) {
         // 1. Kolla om aktören redan finns
-        Optional<Actor> existing = getName(name);
+        Optional<Actor> existing = findByName(name);
 
         if (existing.isPresent()) {
             // 2. Om den finns, uppdatera info
@@ -59,7 +56,7 @@ public class ActorRepoJpa implements ActorRepo {
     }
 
     @Override
-    public Optional<Actor> getName(String actorName) {
+    public Optional<Actor> findByName(String actorName) {
         return em.createQuery("SELECT a FROM Actor a WHERE a.actorName = :name", Actor.class)
             .setParameter("name", actorName)
             .getResultStream()
@@ -74,9 +71,9 @@ public class ActorRepoJpa implements ActorRepo {
         }
 
         return em.createQuery(
-                "SELECT a FROM Actor a WHERE a.country = :count",
+                "SELECT a FROM Actor a WHERE a.country = :country",
                 Actor.class)
-            .setParameter("count", country)
+            .setParameter("country", country)
             .getResultList();
     }
 

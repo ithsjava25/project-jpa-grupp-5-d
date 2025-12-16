@@ -1,9 +1,10 @@
 package org.example.repo;
 
-import org.example.pojo.User;
+import org.example.pojo.Movie;
 
 import java.util.List;
 
 public interface UserRatingRepo {
-    List<User> getRating(int rating);
+    List<Movie> getMoviesByRating(float minRating, float maxRating);
+    public List<Object[]> getAverageRatings();
 }

@@ -16,7 +16,7 @@ public interface DirectorRepo {
 
     Optional<Director> getById(Long id);
 
-    Optional<Director> getName(String directorName);
+    Optional<Director> findByName(String directorName);
 
     List<Director> getCountry (Country country);
 
