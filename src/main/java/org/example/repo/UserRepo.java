@@ -9,11 +9,11 @@ public interface UserRepo {
 
     User addUser(String userName, String password);
 
-    boolean uppdatePassword(long userId, String newPassword);
+    boolean updatePassword(long userId, String newPassword);
 
     boolean deleteUser(long userId);
 
-    Optional<User> getById(int userId);
+    Optional<User> getById(long userId);
 
     Optional<User> validateUser (String userName, String password);
 
