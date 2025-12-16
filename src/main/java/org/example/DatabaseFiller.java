@@ -156,7 +156,7 @@ public class DatabaseFiller {
             {"Mystic Eclipse", LocalDate.parse("2021-07-07"), 135, Country.CANADA, Language.ENGLISH}
         };
 
-            
+
         for (Object[] m : movies) {
             movieRepo.addMovie(
                 (String) m[0],
