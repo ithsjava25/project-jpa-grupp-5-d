@@ -43,13 +43,12 @@ public class Director {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Director director = (Director) o;
-        return Objects.equals(id, director.id) && Objects.equals(directorName, director.directorName) && Objects.equals(movies, director.movies) && country == director.country;
+        if (!(o instanceof Director director)) return false;
+        return Objects.equals(id, director.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, directorName, movies, country);
+        return Objects.hashCode(id);
     }
 }

@@ -2,6 +2,8 @@ package org.example.pojo;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "user_rating")
 public class UserRating {
@@ -18,7 +20,7 @@ public class UserRating {
         @JoinColumn(name = "movie_id")
         private Movie movie;
 
-        private float rating;
+        private double rating;
 
     public UserRating() {}
 
@@ -52,11 +54,22 @@ public class UserRating {
         this.movie = movie;
     }
 
-    public float getRating() {
+    public double getRating() {
         return rating;
     }
 
     public void setRating(float rating) {
         this.rating = rating;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof UserRating that)) return false;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

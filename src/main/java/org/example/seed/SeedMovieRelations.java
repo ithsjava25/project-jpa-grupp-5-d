@@ -22,6 +22,8 @@ public class SeedMovieRelations {
                                 Map<String, Genre> genres,
                                 MovieRepoJpa movieRepo) {
 
+
+
         // Titanic
         movieRepo.setDirector("Titanic", directors.get("James Cameron"));
         movieRepo.addActors("Titanic", List.of(

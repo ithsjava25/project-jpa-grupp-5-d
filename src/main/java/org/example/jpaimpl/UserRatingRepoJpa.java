@@ -103,6 +103,16 @@ public class UserRatingRepoJpa implements UserRatingRepo {
             userRating = new UserRating(user, movie, rating);
             em.persist(userRating);
         }
+        // Update movie ranking
+        Double avg = em.createQuery(
+                "SELECT AVG(ur.rating) FROM UserRating ur WHERE ur.movie = :movie",
+                Double.class)
+            .setParameter("movie", movie)
+            .getSingleResult();
+
+        movie.setRanking(avg);
+        em.merge(movie);
+
         return userRating;
     }
 

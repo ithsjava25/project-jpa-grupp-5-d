@@ -84,13 +84,12 @@ public class User {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(userName, user.userName) && Objects.equals(password, user.password) && Objects.equals(ratings, user.ratings) && Objects.equals(favoriteMovies, user.favoriteMovies);
+        if (!(o instanceof User user)) return false;
+        return Objects.equals(id, user.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userName, password, ratings, favoriteMovies);
+        return Objects.hashCode(id);
     }
 }

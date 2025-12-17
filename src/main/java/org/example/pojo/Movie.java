@@ -20,7 +20,7 @@ public class Movie {
     private LocalDate releaseDate;
 
     private int length;
-    private float ranking;
+    private double ranking;
 
     @ManyToMany
     @JoinTable(
@@ -64,8 +64,8 @@ public class Movie {
     public int getLength() { return length; }
     public void setLength(int length) { this.length = length; }
 
-    public float getRanking() { return ranking; }
-    public void setRanking(float ranking) { this.ranking = ranking; }
+    public double getRanking() { return ranking; }
+    public void setRanking(double ranking) { this.ranking = ranking; }
 
     public Country getCountry() { return country; }
     public void setCountry(Country country) { this.country = country; }
@@ -102,23 +102,12 @@ public class Movie {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Movie movie = (Movie) o;
-        return id == movie.id &&
-            length == movie.length &&
-            Float.compare(ranking, movie.ranking) == 0 &&
-            Objects.equals(title, movie.title) &&
-            Objects.equals(releaseDate, movie.releaseDate) &&
-            Objects.equals(actors, movie.actors) &&
-            Objects.equals(genres, movie.genres) &&
-            Objects.equals(director, movie.director) &&
-            Objects.equals(ratings, movie.ratings) &&
-            country == movie.country &&
-            language == movie.language;
+        if (!(o instanceof Movie movie)) return false;
+        return id == movie.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, releaseDate, length, ranking, actors, genres, director, ratings, country, language);
+        return Objects.hashCode(id);
     }
 }
