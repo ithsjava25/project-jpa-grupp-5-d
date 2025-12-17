@@ -47,7 +47,8 @@ public class App {
                 seedMovies.seedMovies();
 
                 SeedUsers seedUsers = new SeedUsers(em);
-                seedUsers.seedUsers();
+                Map<String, User> users = seedUsers.seed();
+                //seedUsers.seedUsers();
 
                 tx.commit();
 

@@ -11,20 +11,20 @@ import java.util.*;
 public class Movie {
 
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     private String title;
 
-    @Column (name = "release_date")
+    @Column(name = "release_date")
     private LocalDate releaseDate;
 
     private int length;
     private float ranking;
 
-
     @ManyToMany
     @JoinTable(
-        name = "Movie_actor",
+        name = "movie_actor",
         joinColumns = @JoinColumn(name = "movie_id"),
         inverseJoinColumns = @JoinColumn(name = "actor_id")
     )
@@ -32,24 +32,18 @@ public class Movie {
 
     @ManyToMany
     @JoinTable(
-        name = "Movie_genre",
+        name = "movie_genre",
         joinColumns = @JoinColumn(name = "movie_id"),
         inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     private Set<Genre> genres = new HashSet<>();
-    //Movie - ägande sidan, Movies bestämmer vilka genrer som finns
-    //En "sida" är ägare och andra är inverse (mottagare)
-    //endast ägaren har JoinTable, mottagare har MappedBy
-    //Movie bestämmer vilka genrer som finns
 
     @ManyToOne
     @JoinColumn(name = "director_id")
     private Director director;
 
-
-    @OneToMany (mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserRating> ratings = new ArrayList<>();
-
 
     @Enumerated(EnumType.STRING)
     private Country country;
@@ -57,75 +51,70 @@ public class Movie {
     @Enumerated(EnumType.STRING)
     private Language language;
 
+    // Getters/setters
+    public long getId() { return id; }
+    public void setId(long id) { this.id = id; }
 
-    public long getId() {
-        return id;
-    }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
-    public void setId(long id) {
-        this.id = id;
-    }
+    public LocalDate getReleaseDate() { return releaseDate; }
+    public void setReleaseDate(LocalDate releaseDate) { this.releaseDate = releaseDate; }
 
-    public String getTitle() {
-        return title;
-    }
+    public int getLength() { return length; }
+    public void setLength(int length) { this.length = length; }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public float getRanking() { return ranking; }
+    public void setRanking(float ranking) { this.ranking = ranking; }
 
-    public LocalDate getReleaseDate() {
-        return releaseDate;
-    }
+    public Country getCountry() { return country; }
+    public void setCountry(Country country) { this.country = country; }
 
-    public void setReleaseDate(LocalDate releaseDate) {
-        this.releaseDate = releaseDate;
-    }
+    public Language getLanguage() { return language; }
+    public void setLanguage(Language language) { this.language = language; }
 
-    public int getLength() {
-        return length;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
-    }
-
-    public float getRanking() {
-        return ranking;
-    }
-
-    public void setRanking(float ranking) {
-        this.ranking = ranking;
-    }
-
-    public Country getCountry() {
-        return country;
-    }
-
-    public void setCountry(Country country) {
-        this.country = country;
-    }
-
-    public Language getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(Language language) {
-        this.language = language;
-    }
-
-    // Methods to connect many-to-many and one-to-many
     public Set<Actor> getActors() { return actors; }
-    public void setActors(Set<Actor> actors) { this.actors = actors; }
+    public void setActors(Set<Actor> actors) {
+        this.actors.clear();
+        if (actors != null) this.actors.addAll(actors);
+    }
+    public void addActor(Actor actor) { this.actors.add(actor); }
+
+    public Set<Genre> getGenres() { return genres; }
+    public void setGenres(Set<Genre> genres) {
+        this.genres.clear();
+        if (genres != null) this.genres.addAll(genres);
+    }
+    public void addGenre(Genre genre) { this.genres.add(genre); }
 
     public Director getDirector() { return director; }
     public void setDirector(Director director) { this.director = director; }
+
+    public List<UserRating> getRatings() { return ratings; }
+    public void setRatings(List<UserRating> ratings) {
+        this.ratings.clear();
+        if (ratings != null) this.ratings.addAll(ratings);
+    }
+    public void addRating(UserRating rating) {
+        this.ratings.add(rating);
+        rating.setMovie(this);
+    }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Movie movie = (Movie) o;
-        return id == movie.id && length == movie.length && Float.compare(ranking, movie.ranking) == 0 && Objects.equals(title, movie.title) && Objects.equals(releaseDate, movie.releaseDate) && Objects.equals(actors, movie.actors) && Objects.equals(genres, movie.genres) && Objects.equals(director, movie.director) && Objects.equals(ratings, movie.ratings) && country == movie.country && language == movie.language;
+        return id == movie.id &&
+            length == movie.length &&
+            Float.compare(ranking, movie.ranking) == 0 &&
+            Objects.equals(title, movie.title) &&
+            Objects.equals(releaseDate, movie.releaseDate) &&
+            Objects.equals(actors, movie.actors) &&
+            Objects.equals(genres, movie.genres) &&
+            Objects.equals(director, movie.director) &&
+            Objects.equals(ratings, movie.ratings) &&
+            country == movie.country &&
+            language == movie.language;
     }
 
     @Override
