@@ -15,7 +15,7 @@ public interface ActorRepo {
 
     Optional<Actor> getById(Long id);
 
-    Optional<Actor> getName (String actorName);
+    Optional<Actor> findByName (String actorName);
     List<Actor> getCountry (Country country);
         // FirstName or LastName
 

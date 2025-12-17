@@ -1,7 +1,6 @@
 package org.example.jpaimpl;
 
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import org.example.pojo.Genre;
 import org.example.repo.GenreRepo;
 
@@ -17,9 +16,8 @@ public class GenreRepoJpa implements GenreRepo {
     }
 
     @Override
-    @Transactional
     public Genre addGenre(String genreName) {
-        Optional<Genre> existing = getByName(genreName);
+        Optional<Genre> existing = findByName(genreName);
 
         if (existing.isPresent()) {
             return existing.get(); // inget att uppdatera för genre
@@ -55,8 +53,8 @@ public class GenreRepoJpa implements GenreRepo {
     }
 
     @Override
-    public Optional<Genre> getByName(String genreName) {
-       if (genreName == null) return Optional.empty();
+    public Optional<Genre> findByName(String genreName) {
+        if (genreName == null || genreName.trim().isEmpty()) return Optional.empty();
 
        return em.createQuery("SELECT g FROM Genre g WHERE g.genreName = :name", Genre.class)
             .setParameter("name", genreName)

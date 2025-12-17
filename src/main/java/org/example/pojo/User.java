@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -22,7 +23,7 @@ public class User {
 
     @ManyToMany
     @JoinTable(
-        name = "user_favorites",
+        name = "User_favorites",
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "movie_id")
     )
@@ -66,5 +67,16 @@ public class User {
 
     public void setFavoriteMovies(Set<Movie> favoriteMovies) {
         this.favoriteMovies = favoriteMovies;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof User user)) return false;
+        return Objects.equals(id, user.id) && Objects.equals(userName, user.userName) && Objects.equals(password, user.password) && Objects.equals(ratings, user.ratings) && Objects.equals(favoriteMovies, user.favoriteMovies);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, userName, password, ratings, favoriteMovies);
     }
 }

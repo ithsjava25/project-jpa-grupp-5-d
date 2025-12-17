@@ -22,7 +22,7 @@ public interface MovieRepo {
 
     Optional<Movie> getById(Long id);
     //id (PK)
-    Optional<Movie>  getTitle(String title);
+    Optional<Movie>  findByTitle(String title);
     //title
     List<Movie> getMovieByReleaseDate(String from, String to);
     //release

@@ -20,7 +20,6 @@ public class UserRepoJpa implements UserRepo {
 
 
     @Override
-    @Transactional
     public User addUser(String userName, String password) {
         Optional<User> existing = validateUser(userName, password);
 
@@ -40,7 +39,7 @@ public class UserRepoJpa implements UserRepo {
 
 
     @Override
-    public boolean uppdatePassword(long userId, String newPassword) {
+    public boolean updatePassword(long userId, String newPassword) {
         if (newPassword == null) return false;
 
         User user = em.find(User.class, userId);
@@ -65,7 +64,7 @@ public class UserRepoJpa implements UserRepo {
     }
 
     @Override
-    public Optional<User> getById(int userId) {
+    public Optional<User> getById(long userId) {
         if (userId <= 0) return Optional.empty();
 
         return Optional.ofNullable(em.find(User.class, userId));
