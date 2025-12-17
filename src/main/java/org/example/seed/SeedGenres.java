@@ -1,4 +1,4 @@
-package org.example;
+package org.example.seed;
 
 import jakarta.persistence.EntityManager;
 import org.example.jpaimpl.GenreRepoJpa;

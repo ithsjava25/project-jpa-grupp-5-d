@@ -1,7 +1,9 @@
 package org.example.repo;
 
+import org.example.pojo.Movie;
 import org.example.pojo.User;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepo {
@@ -17,4 +19,11 @@ public interface UserRepo {
 
     Optional<User> validateUser (String userName, String password);
 
+    public boolean addFavoriteMovie(long userId, Movie movie);
+
+    public boolean removeFavoriteMovie(long userId, Movie movie);
+
+    public List<Movie> getFavoriteMovies(long userId);
+
+    public Optional<User> findByUserName(String userName);
 }

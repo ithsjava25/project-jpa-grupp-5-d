@@ -19,7 +19,7 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "user")
-    private List<UserRating> ratings ;
+    private List<UserRating> ratings;
 
     @ManyToMany
     @JoinTable(
@@ -67,6 +67,19 @@ public class User {
 
     public void setFavoriteMovies(Set<Movie> favoriteMovies) {
         this.favoriteMovies = favoriteMovies;
+    }
+
+    // FOR User_favorite
+    public void addFavoriteMovie(Movie movie) {
+        favoriteMovies.add(movie);
+    }
+
+    public void removeFavoriteMovie(Movie movie) {
+        favoriteMovies.remove(movie);
+    }
+
+    public boolean isFavorite(Movie movie) {
+        return favoriteMovies.contains(movie);
     }
 
     @Override

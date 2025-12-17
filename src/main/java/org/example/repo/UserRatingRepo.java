@@ -19,4 +19,7 @@ public interface UserRatingRepo {
     Optional<Float> getRatingForMovieByUser(User user, Movie movie);
 
     Optional<Double> getAverageRatingForMovie(Movie movie);
+
+    public UserRating rateMovie(User user, Movie movie, float rating);
+
 }

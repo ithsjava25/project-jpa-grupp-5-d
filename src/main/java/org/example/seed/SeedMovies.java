@@ -1,4 +1,4 @@
-package org.example;
+package org.example.seed;
 
 import jakarta.persistence.EntityManager;
 import org.example.enums.Country;
@@ -18,7 +18,7 @@ public class SeedMovies {
         this.em = em;
     }
 
-    public void seedMovies() {
+    public Map<String, Movie> seedMovies() {
         MovieRepoJpa movieRepo = new MovieRepoJpa(em);
 
         Map<String, Movie> moviesMap = new HashMap<>();
@@ -96,6 +96,8 @@ public class SeedMovies {
             }
 
         }
+
+        return moviesMap;
 
     }
 }

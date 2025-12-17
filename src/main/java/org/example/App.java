@@ -5,13 +5,13 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceConfiguration;
 import org.example.pojo.*;
+import org.example.seed.*;
 import org.hibernate.jpa.HibernatePersistenceConfiguration;
 
-import java.util.List;
 import java.util.Map;
 
 public class App {
-    public static void main(String[] args) {
+    static void main(String[] args) {
 
 
         final PersistenceConfiguration cfg = new HibernatePersistenceConfiguration( "emf" )
