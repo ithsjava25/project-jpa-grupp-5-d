@@ -8,18 +8,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRatingRepo {
-    List<Movie> getMoviesByRating(float minRating, float maxRating);
-
-    public List<Object[]> getAverageRatings();
-
-    List<UserRating> getRatingsByUser(User user);
-
-    List<Movie> getMoviesRatedByUser(User user);
 
     Optional<Float> getRatingForMovieByUser(User user, Movie movie);
-
     Optional<Double> getAverageRatingForMovie(Movie movie);
 
-    public UserRating rateMovie(User user, Movie movie, float rating);
+    void rateMovie(User user, Movie movie, float rating);
 
+    List<Movie> getMoviesByRating(float minRating, float maxRating);
+    List<UserRating> getRatingsByUser(User user);
+    List<Movie> getMoviesRatedByUser(User user);
+    List<Object[]> getAverageRatings();
 }

@@ -8,15 +8,10 @@ import java.util.Optional;
 
 public interface ActorRepo {
 
-    //add actor
     Actor addActor (String actorName, Country country);
-    //delete actor
     boolean deleteActor (long id);
+    List<Actor> getCountry (Country country);
 
     Optional<Actor> findById(Long id);
-
     Optional<Actor> findByName (String actorName);
-    List<Actor> getCountry (Country country);
-        // FirstName or LastName
-
 }

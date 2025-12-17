@@ -82,7 +82,7 @@ public class UserRatingRepoJpa implements UserRatingRepo {
     }
 
     @Override
-    public UserRating rateMovie(User user, Movie movie, float rating) {
+    public void rateMovie(User user, Movie movie, float rating) {
         if (user == null || movie == null) throw new IllegalArgumentException("User or Movie cannot be null");
 
         // Check if rating already exists
@@ -94,6 +94,7 @@ public class UserRatingRepoJpa implements UserRatingRepo {
             .getResultStream()
             .findFirst();
 
+        // If already rated, update rating
         UserRating userRating;
         if (existing.isPresent()) {
             userRating = existing.get();
@@ -103,6 +104,7 @@ public class UserRatingRepoJpa implements UserRatingRepo {
             userRating = new UserRating(user, movie, rating);
             em.persist(userRating);
         }
+
         // Update movie ranking
         Double avg = em.createQuery(
                 "SELECT AVG(ur.rating) FROM UserRating ur WHERE ur.movie = :movie",
@@ -113,7 +115,6 @@ public class UserRatingRepoJpa implements UserRatingRepo {
         movie.setRanking(avg);
         em.merge(movie);
 
-        return userRating;
     }
 
 }

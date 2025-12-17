@@ -12,32 +12,21 @@ import java.util.Optional;
 
 public interface MovieRepo {
 
-    //add movie
     Movie addMovie(String title, LocalDate date, int length, Country country, Language language);
-    //update movie???
-    //delete movie
     boolean deleteMovie(long id);
 
-    List<Movie> getAllMovies();
-
     Optional<Movie> getById(Long id);
-    //id (PK)
     Optional<Movie>  findByTitle(String title);
-    //title
-    List<Movie> getMovieByReleaseDate(String from, String to);
-    //release
-    List<Movie> getMovieByLength(int minLen, int maxLen);
-    //length
-    List<Movie> getMovieByRanking(int minRank, int maxRank);
-    //ranking
-    List<Movie> getMovieByLanguage(Language language);
-    //language
 
     void addActorToMovie(Long movieId, Long actorId);
     void addActorToMovie(Movie movie, Actor actor);
     void setDirector(Long movieId, Long directorId);
 
-
     List<Movie> getByDirector(Director director);
     List<Movie> getByActor(Actor actor);
+    List<Movie> getMovieByReleaseDate(String from, String to);
+    List<Movie> getMovieByLength(int minLen, int maxLen);
+    List<Movie> getMovieByRanking(int minRank, int maxRank);
+    List<Movie> getMovieByLanguage(Language language);
+    List<Movie> getAllMovies();
 }

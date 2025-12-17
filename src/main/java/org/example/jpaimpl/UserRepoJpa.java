@@ -3,7 +3,6 @@ package org.example.jpaimpl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import org.example.pojo.Movie;
 import org.example.pojo.User;
 import org.example.repo.UserRepo;
@@ -107,13 +106,12 @@ public class UserRepoJpa implements UserRepo {
     }
 
     @Override
-    public boolean addFavoriteMovie(long userId, Movie movie) {
+    public void addFavoriteMovie(long userId, Movie movie) {
         User user = em.find(User.class, userId);
-        if (user == null || movie == null) return false;
+        if (user == null || movie == null) return;
 
         user.addFavoriteMovie(movie);
         em.merge(user); // persist the updated relationship
-        return true;
     }
 
     @Override

@@ -9,9 +9,8 @@ public interface GenreRepo {
 
     Genre addGenre(String genreName);
     boolean deleteGenre(long genreID);
+    List<Genre> getAllGenres();
 
     Optional<Genre> getById(long id);
     Optional<Genre> findByName (String name);
-
-    List<Genre> getAllGenres();
 }

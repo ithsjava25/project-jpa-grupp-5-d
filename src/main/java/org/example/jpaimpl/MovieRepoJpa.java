@@ -61,7 +61,6 @@ public class MovieRepoJpa {
     }
 
     // Utökad add med relationer
-    @Transactional
     public Movie addMovie(String title,
                           LocalDate releaseDate,
                           int length,
@@ -120,11 +119,6 @@ public class MovieRepoJpa {
             return true;
         }
         return false;
-    }
-
-    @Transactional
-    public Movie update(Movie movie) {
-        return em.merge(movie);
     }
 
     // Hjälpmetoder för relationer
