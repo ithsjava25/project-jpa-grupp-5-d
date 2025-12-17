@@ -39,11 +39,11 @@ public class Director {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Director director)) return false;
-        return Objects.equals(id, director.id) && Objects.equals(directorName, director.directorName) && Objects.equals(movies, director.movies) && country == director.country;
+        return Objects.equals(id, director.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, directorName, movies, country);
+        return Objects.hash(id);
     }
 }

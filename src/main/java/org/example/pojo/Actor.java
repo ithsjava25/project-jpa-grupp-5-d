@@ -55,11 +55,11 @@ public class Actor {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Actor actor)) return false;
-        return Objects.equals(id, actor.id) && Objects.equals(actorName, actor.actorName) && country == actor.country && Objects.equals(movies, actor.movies);
+        return Objects.equals(id, actor.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, actorName, country, movies);
+        return Objects.hash(id);
     }
 }

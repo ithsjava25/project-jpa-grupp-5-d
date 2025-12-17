@@ -63,11 +63,11 @@ public class Genre{
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Genre genre)) return false;
-        return genreID == genre.genreID && Objects.equals(genreName, genre.genreName) && Objects.equals(movies, genre.movies);
+        return genreID == genre.genreID;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(genreID, genreName, movies);
+        return Objects.hash(genreID);
     }
 }
