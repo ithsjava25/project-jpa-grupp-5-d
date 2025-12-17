@@ -13,7 +13,7 @@ public interface ActorRepo {
     //delete actor
     boolean deleteActor (long id);
 
-    Optional<Actor> getById(Long id);
+    Optional<Actor> findById(Long id);
 
     Optional<Actor> findByName (String actorName);
     List<Actor> getCountry (Country country);

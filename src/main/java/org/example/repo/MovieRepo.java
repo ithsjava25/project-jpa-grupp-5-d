@@ -33,6 +33,11 @@ public interface MovieRepo {
     List<Movie> getMovieByLanguage(Language language);
     //language
 
+    void addActorToMovie(Long movieId, Long actorId);
+    void addActorToMovie(Movie movie, Actor actor);
+    void setDirector(Long movieId, Long directorId);
+
+
     List<Movie> getByDirector(Director director);
     List<Movie> getByActor(Actor actor);
 }

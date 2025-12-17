@@ -114,14 +114,22 @@ public class Movie {
         this.language = language;
     }
 
+    // Methods to connect many-to-many and one-to-many
+    public Set<Actor> getActors() { return actors; }
+    public void setActors(Set<Actor> actors) { this.actors = actors; }
+
+    public Director getDirector() { return director; }
+    public void setDirector(Director director) { this.director = director; }
+
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Movie movie)) return false;
-        return id == movie.id;
+        if (o == null || getClass() != o.getClass()) return false;
+        Movie movie = (Movie) o;
+        return id == movie.id && length == movie.length && Float.compare(ranking, movie.ranking) == 0 && Objects.equals(title, movie.title) && Objects.equals(releaseDate, movie.releaseDate) && Objects.equals(actors, movie.actors) && Objects.equals(genres, movie.genres) && Objects.equals(director, movie.director) && Objects.equals(ratings, movie.ratings) && country == movie.country && language == movie.language;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, title, releaseDate, length, ranking, actors, genres, director, ratings, country, language);
     }
 }
