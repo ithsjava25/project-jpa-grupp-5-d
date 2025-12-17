@@ -14,6 +14,7 @@ public class Actor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     private String actorName;
 
     @Enumerated(EnumType.STRING)
@@ -24,7 +25,7 @@ public class Actor {
 
     // getters & setters
 
-    public void setId(Long id){
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -32,7 +33,7 @@ public class Actor {
         return id;
     }
 
-    public void setActorName(String actorName){
+    public void setActorName(String actorName) {
         this.actorName = actorName;
     }
 
@@ -40,9 +41,9 @@ public class Actor {
         return actorName;
     }
 
-    public void setCountry(Country country){
+    public void setCountry(Country country) {
         this.country = country;
-  }
+    }
 
     public Country getCountry() {
         return country;
@@ -52,14 +53,21 @@ public class Actor {
         return movies;
     }
 
+    public void setMovies(Set<Movie> movies) {
+        this.movies = movies;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Actor actor)) return false;
-        return Objects.equals(id, actor.id) && Objects.equals(actorName, actor.actorName) && country == actor.country && Objects.equals(movies, actor.movies);
+        return Objects.equals(id, actor.id) && Objects.equals(actorName, actor.actorName)
+            && country == actor.country && Objects.equals(movies, actor.movies);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, actorName, country, movies);
     }
+
 }
+

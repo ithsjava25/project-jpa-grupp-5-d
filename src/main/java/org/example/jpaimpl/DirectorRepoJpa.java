@@ -47,7 +47,7 @@ public class DirectorRepoJpa implements DirectorRepo {
     }
 
     @Override
-    public Optional<Director> getById(Long id) {
+    public Optional<Director> findById(Long id) {
         return Optional.ofNullable(em.find(Director.class, id));
     }
 

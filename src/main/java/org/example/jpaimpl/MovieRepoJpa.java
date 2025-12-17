@@ -44,7 +44,6 @@ public class MovieRepoJpa implements MovieRepo {
         }
     }
 
-
     @Override
     public boolean deleteMovie(long movieId) {
         if (movieId <= 0) return false;
@@ -56,6 +55,37 @@ public class MovieRepoJpa implements MovieRepo {
         em.remove(movie);
         return true;
     }
+
+    @Override
+    public void addActorToMovie(Long movieId, Long actorId){
+        Movie movie = em.find(Movie.class, movieId);
+        Actor actor = em.find(Actor.class, actorId);
+
+        movie.getActors().add(actor);
+        actor.getMovies().add(movie);
+
+        em.persist(movie);
+        em.persist(actor);
+    }
+    public void addActorToMovie(Movie movie, Actor actor) {
+        movie.getActors().add(actor);
+        actor.getMovies().add(movie);
+        em.persist(movie); // optional if already managed
+        em.persist(actor); // optional if already managed
+    }
+
+
+    public void setDirector(Long movieId, Long directorId) {
+        Movie movie = em.find(Movie.class, movieId);
+        Director director = em.find(Director.class, directorId);
+
+        movie.setDirector(director);
+        director.getMovies().add(movie);
+
+        em.persist(movie);
+        em.persist(director);
+    }
+
 
     @Override
     public List<Movie> getAllMovies() {

@@ -71,7 +71,8 @@ public class User {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof User user)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
         return Objects.equals(id, user.id) && Objects.equals(userName, user.userName) && Objects.equals(password, user.password) && Objects.equals(ratings, user.ratings) && Objects.equals(favoriteMovies, user.favoriteMovies);
     }
 
