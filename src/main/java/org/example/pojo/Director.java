@@ -27,6 +27,11 @@ public class Director {
         this.directorName = directorName;
         this.country = country;
     }
+
+    // To handle many-to-many and one-to-many relations
+    public Set<Movie> getMovies() { return movies; }
+    public void setMovies(Set<Movie> movies) { this.movies = movies; }
+
     public long getDirectorID(){return id;}
     public void setDirectorID(long id){this.id = id;}
 
@@ -38,7 +43,8 @@ public class Director {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Director director)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
+        Director director = (Director) o;
         return Objects.equals(id, director.id) && Objects.equals(directorName, director.directorName) && Objects.equals(movies, director.movies) && country == director.country;
     }
 

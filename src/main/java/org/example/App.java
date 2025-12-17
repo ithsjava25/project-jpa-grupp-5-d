@@ -7,6 +7,9 @@ import jakarta.persistence.PersistenceConfiguration;
 import org.example.pojo.*;
 import org.hibernate.jpa.HibernatePersistenceConfiguration;
 
+import java.util.List;
+import java.util.Map;
+
 public class App {
     public static void main(String[] args) {
 
@@ -29,14 +32,25 @@ public class App {
             try{
                 tx.begin();
 
-                DatabaseFiller filler = new DatabaseFiller(em);
-                filler.seedActors();
-                filler.seedDirectors();
-                filler.seedMovies();
-                filler.seedGenres();
-                filler.seedUsers();
+                SeedGenres seedGenres = new SeedGenres(em);
+                Map<String, Genre> genres = seedGenres.seed();
+                //seedGenres.seedGenres();
+
+                SeedActors seedActors = new SeedActors(em);
+                Map<String, Actor> actors = seedActors.seed();
+
+                SeedDirectors seedDirectors = new SeedDirectors(em);
+                Map<String, Director> directors = seedDirectors.seed();
+                //seedDirectors.seedDirectors();
+
+                SeedMovies seedMovies = new SeedMovies(em);
+                seedMovies.seedMovies();
+
+                SeedUsers seedUsers = new SeedUsers(em);
+                seedUsers.seedUsers();
 
                 tx.commit();
+
             } catch (RuntimeException e) {
                 if (tx.isActive()) {
                     tx.rollback();

@@ -1,0 +1,89 @@
+Actor
+@Override
+public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Actor actor)) return false;
+    return Objects.equals(id, actor.id);
+}
+
+@Override
+public int hashCode() {
+    return Objects.hash(id);
+}
+
+
+Director
+@Override
+public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Director director)) return false;
+    return Objects.equals(id, director.id);
+}
+
+@Override
+public int hashCode() {
+    return Objects.hash(id);
+}
+
+
+
+
+Movie
+@Override
+public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Movie movie)) return false;
+    return id == movie.id;
+}
+
+@Override
+public int hashCode() {
+    return Objects.hash(id);
+}
+
+
+
+User
+@Override
+public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof User user)) return false;
+    return Objects.equals(id, user.id);
+}
+
+@Override
+public int hashCode() {
+    return Objects.hash(id);
+}
+
+
+
+
+
+
+Genre
+@Override
+public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Genre genre)) return false;
+    return genreID == genre.genreID;
+}
+
+@Override
+public int hashCode() {
+    return Objects.hash(genreID);
+}
+
+
+UserRating
+@Override
+public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof UserRating that)) return false;
+    return Objects.equals(id, that.id);
+}
+
+@Override
+public int hashCode() {
+    return Objects.hash(id);
+}

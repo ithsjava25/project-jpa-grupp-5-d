@@ -14,7 +14,7 @@ public interface DirectorRepo {
     //delete director
     boolean deleteDirector(long id);
 
-    Optional<Director> getById(Long id);
+    Optional<Director> findById(Long id);
 
     Optional<Director> findByName(String directorName);
 
