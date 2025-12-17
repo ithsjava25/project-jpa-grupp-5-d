@@ -14,7 +14,6 @@ import java.util.Map;
 public class App {
     static void main(String[] args) {
 
-
         final PersistenceConfiguration cfg = new HibernatePersistenceConfiguration( "emf" )
             .jdbcUrl( "jdbc:mysql://localhost:3306/codeTraumaTeam" )
             .jdbcUsername( "user" )
@@ -25,7 +24,7 @@ public class App {
             .property("hibernate.highlight_sql","true")
             .managedClasses(Actor.class, Director.class, Genre.class, Movie.class, User.class, UserRating.class);
 
-        // Skapa EntityManagerFactory
+        // Seeding database
         try (EntityManagerFactory emf = cfg.createEntityManagerFactory();
              EntityManager em = emf.createEntityManager()) {
 
@@ -61,11 +60,47 @@ public class App {
                 tx.commit();
 
             } catch (RuntimeException e) {
-                e.printStackTrace();
                 if (tx.isActive()) {
                     tx.rollback();
                 }
             }
+
         }
+
+        /*
+        validateUser(String userName, String password);
+         */
+    }
+
+    public void printOptions(){
+        /*
+        User:
+        1. Add new user (userName, password)
+        2. Update password (userId, password)
+        3. Delete user (userId)
+        4. Get favorite movies (UserId)
+        5. Add favorite movie (userId, movie)
+        6. Remove favorite movie (userId, movie)
+        7. Find users by username (userName)
+
+        UserRating:
+        1. Rate a movie (user, movie, rating)
+        2. Get movies that you rated (user)
+        3. Get movies by rating (min, max)
+        4. Get your rating for a movie (user, movie)
+        5. Get average rating for a movie
+            **** CAN BE DELETED? DISPLAYED IN MOVIE ENTITY ****
+
+        Movie:
+
+        Genre:
+
+        Director:
+
+        Actor:
+
+
+
+         */
     }
 }
