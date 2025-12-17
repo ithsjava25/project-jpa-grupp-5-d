@@ -1,6 +1,7 @@
 package org.example.repo;
 
-import org.example.entity.Director;
+import org.example.pojo.Director;
+import org.example.enums.Country;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,14 +9,15 @@ import java.util.Optional;
 public interface DirectorRepo {
 
     //add director
-    boolean addDirector (long id, String firstName, String lastName, String country);
+    Director addDirector (String directorName, Country country);
     //update director
     //delete director
     boolean deleteDirector(long id);
 
-    Optional<Director> getId(long id);
+    Optional<Director> getById(Long id);
 
-    Optional<Director> getName(String name);
+    Optional<Director> getName(String directorName);
 
-    List<Director> getCountry(String country);
+    List<Director> getCountry (Country country);
+
 }

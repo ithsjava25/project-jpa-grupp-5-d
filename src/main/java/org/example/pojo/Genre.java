@@ -1,24 +1,25 @@
-package org.example.entity;
+package org.example.pojo;
 
 import jakarta.persistence.*;
+import org.example.repo.GenreRepo;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
-public class Genre {
+public class Genre{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int genreID;
 
-    //kommer inte ihåg hur man gjorde detta
-    //alt. namnet blir samma som fältnamnet i entity;n
-    @Column (name = "Genre", length = 100)
+    @Column (name = "genre", length = 100)
     private String genreName;
 
-    //@ManyToMany(mappedBy = "genres")
-    //private Set<Movie> movies = new HashSet<>();
+    @ManyToMany(mappedBy = "genres")
+    private Set<Movie> movies = new HashSet<>();
+    //Mottagare, mapped By, dessa filmer finns inom X genre
+    //tillåter inte dupletter
+    //ingen ordning - sorteras utefter ID eller av användaren genom select
 
     public Genre(){}
 
@@ -50,5 +51,14 @@ public class Genre {
             ", name='" + genreName + '\'' +
             '}';
     }
+
+    public String getGenreName() {return genreName;}
+
+    public void setGenreName(String genreName) {this.genreName = genreName;}
+
+    public Set<Movie> getMovies() {return movies;}
+
+    public void setMovies(Set<Movie> movies) {this.movies = movies;}
+
 
 }

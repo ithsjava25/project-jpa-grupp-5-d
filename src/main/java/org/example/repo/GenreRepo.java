@@ -1,12 +1,17 @@
 package org.example.repo;
 
-import org.example.entity.Genre;
+import org.example.pojo.Genre;
 
 import java.util.Optional;
+import java.util.List;
 
 public interface GenreRepo {
 
-    Optional<Genre> getId(long id);
-    Optional<Genre> getName (String name);
+    Genre addGenre(String genreName);
+    boolean deleteGenre(long genreID);
 
+    Optional<Genre> getById(long id);
+    Optional<Genre> getByName (String name);
+
+    List<Genre> getAllGenres();
 }

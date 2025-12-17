@@ -1,23 +1,26 @@
 package org.example.repo;
 
-import org.example.entity.Actor;
-import org.example.entity.Director;
-import org.example.entity.Movie;
+import org.example.enums.Country;
+import org.example.enums.Language;
+import org.example.pojo.Actor;
+import org.example.pojo.Director;
+import org.example.pojo.Movie;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public interface MovieRepo {
 
     //add movie
-    boolean addMovie(long id, String title, String date, String length, int ranking, String country, String language);
+    Movie addMovie(String title, LocalDate date, int length, Country country, Language language);
     //update movie???
     //delete movie
     boolean deleteMovie(long id);
 
-    List<Movie> getMovies();
+    List<Movie> getAllMovies();
 
-    Optional<Movie> getId(Long id);
+    Optional<Movie> getById(Long id);
     //id (PK)
     Optional<Movie>  getTitle(String title);
     //title
@@ -27,9 +30,9 @@ public interface MovieRepo {
     //length
     List<Movie> getMovieByRanking(int minRank, int maxRank);
     //ranking
-    List<Movie> getMovieByLanguage(String language);
+    List<Movie> getMovieByLanguage(Language language);
     //language
 
-    List<Director> getDirectors();
-    List<Actor> getActors();
+    List<Movie> getByDirector(Director director);
+    List<Movie> getByActor(Actor actor);
 }
