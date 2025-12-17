@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceConfiguration;
+import org.example.jpaimpl.MovieRepoJpa;
 import org.example.pojo.*;
 import org.example.seed.*;
 import org.hibernate.jpa.HibernatePersistenceConfiguration;

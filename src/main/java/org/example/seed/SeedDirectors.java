@@ -20,6 +20,7 @@ public class SeedDirectors {
         DirectorRepoJpa directorRepo = new DirectorRepoJpa(em);
         Map<String, Director> directors = new HashMap<>();
 
+        // Befintliga
         directors.put("Steven Spielberg", directorRepo.addDirector("Steven Spielberg", Country.USA));
         directors.put("Christopher Nolan", directorRepo.addDirector("Christopher Nolan", Country.UK));
         directors.put("Quentin Tarantino", directorRepo.addDirector("Quentin Tarantino", Country.USA));
@@ -40,6 +41,34 @@ public class SeedDirectors {
         directors.put("Paul Thomas Anderson", directorRepo.addDirector("Paul Thomas Anderson", Country.USA));
         directors.put("Sofia Coppola", directorRepo.addDirector("Sofia Coppola", Country.USA));
         directors.put("Greta Gerwig", directorRepo.addDirector("Greta Gerwig", Country.USA));
+
+        // Nya riktiga
+        directors.put("Jon Watts", directorRepo.addDirector("Jon Watts", Country.USA));
+        directors.put("Anthony Russo", directorRepo.addDirector("Anthony Russo", Country.USA));
+        directors.put("Joe Russo", directorRepo.addDirector("Joe Russo", Country.USA));
+        directors.put("George Lucas", directorRepo.addDirector("George Lucas", Country.USA));
+        directors.put("Ryan Coogler", directorRepo.addDirector("Ryan Coogler", Country.USA));
+        directors.put("James Gunn", directorRepo.addDirector("James Gunn", Country.USA));
+        directors.put("Scott Derrickson", directorRepo.addDirector("Scott Derrickson", Country.USA));
+        directors.put("Jon Favreau", directorRepo.addDirector("Jon Favreau", Country.USA));
+        directors.put("Peyton Reed", directorRepo.addDirector("Peyton Reed", Country.USA));
+        directors.put("David Slade", directorRepo.addDirector("David Slade", Country.UK));
+
+        // Nya fiktiva placeholders
+        directors.put("Oliver Hunt", directorRepo.addDirector("Oliver Hunt", Country.UK));
+        directors.put("Sophia Crimson", directorRepo.addDirector("Sophia Crimson", Country.USA));
+        directors.put("Lucas Emerald", directorRepo.addDirector("Lucas Emerald", Country.CANADA));
+        directors.put("Ethan Midnight", directorRepo.addDirector("Ethan Midnight", Country.USA));
+        directors.put("Henry Dragon", directorRepo.addDirector("Henry Dragon", Country.UK));
+        directors.put("Amelia Star", directorRepo.addDirector("Amelia Star", Country.USA));
+        directors.put("Karl Stahl", directorRepo.addDirector("Karl Stahl", Country.GERMANY));
+        directors.put("Nova Celeste", directorRepo.addDirector("Nova Celeste", Country.USA));
+        directors.put("Pierre Realm", directorRepo.addDirector("Pierre Realm", Country.FRANCE));
+        directors.put("Oliver Neon", directorRepo.addDirector("Oliver Neon", Country.UK));
+        directors.put("Stella Dawn", directorRepo.addDirector("Stella Dawn", Country.USA));
+        directors.put("Evelyn Mystic", directorRepo.addDirector("Evelyn Mystic", Country.CANADA));
+        directors.put("Henry Voyage", directorRepo.addDirector("Henry Voyage", Country.USA));
+        directors.put("Sophia Frost", directorRepo.addDirector("Sophia Frost", Country.UK));
 
         return directors;
     }
