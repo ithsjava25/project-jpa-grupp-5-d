@@ -5,14 +5,19 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceConfiguration;
 import org.example.jpaimpl.MovieRepoJpa;
+import org.example.jpaimpl.UserRepoJpa;
 import org.example.pojo.*;
+import org.example.repo.UserRepo;
 import org.example.seed.*;
 import org.hibernate.jpa.HibernatePersistenceConfiguration;
 
 import java.util.Map;
+import java.util.Scanner;
 
 public class App {
     static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
 
         final PersistenceConfiguration cfg = new HibernatePersistenceConfiguration( "emf" )
             .jdbcUrl( "jdbc:mysql://localhost:3306/codeTraumaTeam" )
@@ -67,40 +72,33 @@ public class App {
 
         }
 
-        /*
-        validateUser(String userName, String password);
-         */
-    }
+        System.out.println("**** Welcome to IMDB CLI Application ****");
+        System.out.print("Please enter your username: ");
+        String userName = sc.nextLine();
+        System.out.print("Please enter your password: ");
+        String password = sc.nextLine();
 
-    public void printOptions(){
-        /*
-        User:
-        1. Add new user (userName, password)
-        2. Update password (userId, password)
-        3. Delete user (userId)
-        4. Get favorite movies (UserId)
-        5. Add favorite movie (userId, movie)
-        6. Remove favorite movie (userId, movie)
-        7. Find users by username (userName)
+        try (EntityManagerFactory emf = cfg.createEntityManagerFactory();
+             EntityManager em = emf.createEntityManager()) {
 
-        UserRating:
-        1. Rate a movie (user, movie, rating)
-        2. Get movies that you rated (user)
-        3. Get movies by rating (min, max)
-        4. Get your rating for a movie (user, movie)
-        5. Get average rating for a movie
-            **** CAN BE DELETED? DISPLAYED IN MOVIE ENTITY ****
+            EntityTransaction tx = em.getTransaction();
+            try{
+                tx.begin();
 
-        Movie:
+                UserRepoJpa userRepo = new UserRepoJpa(em);
 
-        Genre:
+                if(userRepo.validateUser(userName, password).isPresent()) {
+                    System.out.println("**** You logged in succesfully ****");
+                } else {
+                    System.out.println("Either your username or password was incorrect. Please try again");
+                }
 
-        Director:
+            } catch (RuntimeException e) {
+                if (tx.isActive()) {
+                    tx.rollback();
+                }
+            }
 
-        Actor:
-
-
-
-         */
+        }
     }
 }
