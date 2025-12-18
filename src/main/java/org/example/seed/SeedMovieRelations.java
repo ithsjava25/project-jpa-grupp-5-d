@@ -23,7 +23,6 @@ public class SeedMovieRelations {
                                 MovieRepoJpa movieRepo) {
 
 
-
         // Titanic
         movieRepo.setDirector("Titanic", directors.get("James Cameron"));
         movieRepo.addActors("Titanic", List.of(

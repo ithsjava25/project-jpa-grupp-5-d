@@ -18,6 +18,7 @@ public class SeedUsers {
         UserRepoJpa userRepo = new UserRepoJpa(em);
         Map<String, User> users = new HashMap<>();
 
+        users.put("Admin", userRepo.addUser("Admin", "Admin"));
         users.put("AliceSmith", userRepo.addUser("AliceSmith", "pass123"));
         users.put("BobJones", userRepo.addUser("BobJones", "qwerty"));
         users.put("CharlieBrown", userRepo.addUser("CharlieBrown", "abc123"));

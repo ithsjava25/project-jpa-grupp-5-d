@@ -5,13 +5,14 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceConfiguration;
 import org.example.jpaimpl.MovieRepoJpa;
+import org.example.jpaimpl.UserRatingRepoJpa;
 import org.example.jpaimpl.UserRepoJpa;
 import org.example.pojo.*;
-import org.example.repo.UserRepo;
 import org.example.seed.*;
 import org.hibernate.jpa.HibernatePersistenceConfiguration;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class App {
@@ -72,26 +73,72 @@ public class App {
 
         }
 
-        System.out.println("**** Welcome to IMDB CLI Application ****");
-        System.out.print("Please enter your username: ");
-        String userName = sc.nextLine();
-        System.out.print("Please enter your password: ");
-        String password = sc.nextLine();
-
+        // Login
         try (EntityManagerFactory emf = cfg.createEntityManagerFactory();
              EntityManager em = emf.createEntityManager()) {
 
             EntityTransaction tx = em.getTransaction();
-            try{
+            try {
                 tx.begin();
 
                 UserRepoJpa userRepo = new UserRepoJpa(em);
+                UserRatingRepoJpa userRatingRepoJpa = new UserRatingRepoJpa(em);
+                MovieRepoJpa movieRepoJpa = new MovieRepoJpa(em);
 
-                if(userRepo.validateUser(userName, password).isPresent()) {
-                    System.out.println("**** You logged in succesfully ****");
-                } else {
-                    System.out.println("Either your username or password was incorrect. Please try again");
-                }
+                String userName;
+                String password;
+                String answer;
+
+                do {
+
+                    System.out.println("**** Welcome to IMDB CLI Application ****");
+                    System.out.print("Please enter your username: ");
+                    userName = sc.nextLine();
+                    System.out.print("Please enter your password: ");
+                    password = sc.nextLine();
+
+                    Optional<User> optionalUser = userRepo.validateUser(userName, password);
+                    //Add check for Admin login
+                    if (optionalUser.isPresent()) {
+                        System.out.println("**** You logged in succesfully ****");
+                        User user = optionalUser.get();
+                        System.out.println("Your userID is: " + user.getId());
+
+                        if (user.getUserName().equals("admin")){
+
+                            CliAdminApp cliAdminApp = new CliAdminApp(em);
+                            cliAdminApp.printOptions();
+
+                        } else {
+
+                            CliApp cliApp = new CliApp();
+                            showMenueOptions();
+
+                            String choice = sc.nextLine();
+                            int number = Integer.parseInt(choice);
+
+                            if (number == 1){
+                                cliApp.optionsUser(userRepo, movieRepoJpa, user);
+                            } else if (number == 2) {
+                                cliApp.optionsUserRating(userRatingRepoJpa, user);
+                            } else if (number == 3) {
+                                cliApp.optionsMovies(movieRepoJpa, user);
+                            } else {
+                                answer = "N";
+                            }
+
+                        }
+
+                    } else {
+                        System.out.println("Either your username or password was incorrect.");
+                    }
+
+                    System.out.println("*********************************");
+                    System.out.println("Do you want to try again? (Y/N)");
+                    answer = sc.nextLine().toUpperCase();
+
+                } while (answer.equals("Y"));
+
 
             } catch (RuntimeException e) {
                 if (tx.isActive()) {
@@ -100,5 +147,15 @@ public class App {
             }
 
         }
+    }
+
+    public static void showMenueOptions(){
+        System.out.println("""
+                            ======== WHAT WOULD YOU LIKE TO DO? ========
+                            1. Show User Menu
+                            2. Show User Rating Menu
+                            3. Show Movie Menu
+                            Press any key to exit
+                            """);
     }
 }

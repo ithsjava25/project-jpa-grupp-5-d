@@ -10,13 +10,14 @@ import org.example.pojo.Movie;
 import org.example.pojo.Actor;
 import org.example.pojo.Director;
 import org.example.pojo.Genre;
+import org.example.repo.MovieRepo;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public class MovieRepoJpa {
+public class MovieRepoJpa implements MovieRepo {
 
     private final EntityManager em;
 
@@ -30,7 +31,7 @@ public class MovieRepoJpa {
                           int length,
                           Country country,
                           Language language) {
-        Optional<Movie> existing = findByTitleOptional(title);
+        Optional<Movie> existing = findByTitle(title);
 
         if (existing.isPresent()) {
             Movie movie = existing.get();
@@ -69,7 +70,7 @@ public class MovieRepoJpa {
                           Director director,
                           List<Actor> actors,
                           List<Genre> genres) {
-        Optional<Movie> existing = findByTitleOptional(title);
+        Optional<Movie> existing = findByTitle(title);
 
         if (existing.isPresent()) {
             Movie movie = existing.get();
@@ -92,26 +93,78 @@ public class MovieRepoJpa {
         }
     }
 
-    public Optional<Movie> findById(Long id) {
-        return Optional.ofNullable(em.find(Movie.class, id));
-    }
 
-    public Optional<Movie> findByTitleOptional(String title) {
+    public Optional<Movie> findByTitle(String title) {
         if (title == null || title.isBlank()) {
             return Optional.empty();
         }
-        TypedQuery<Movie> q = em.createQuery(
-            "SELECT m FROM Movie m WHERE LOWER(TRIM(m.title)) = LOWER(TRIM(:title))",
-            Movie.class);
-        q.setParameter("title", title.trim());
-        return q.getResultStream().findFirst();
+
+        return Optional.ofNullable(em.find(Movie.class, title));
     }
 
-    public Movie findByTitle(String title) {
-        return findByTitleOptional(title).orElseThrow();
+    @Override
+    public List<Movie> getByDirector(Director director) {
+        return List.of();
     }
 
-    @Transactional
+    @Override
+    public List<Movie> getByActor(Actor actor) {
+        return List.of();
+    }
+
+    @Override
+    public List<Movie> getMovieByReleaseDate(String from, String to) {
+        if (from == null || to == null || from.isEmpty() || to.isEmpty()) return List.of();
+
+        return em.createQuery(
+            "select m from Movie m where m.date between :from and :to order by m.date asc", Movie.class)
+            .setParameter("from", from)
+            .setParameter("to", to)
+            .getResultList();
+    }
+
+    @Override
+    public List<Movie> getMovieByLength(int minLen, int maxLen) {
+        if (minLen < 0 || maxLen < 0) return List.of();
+
+        return em.createQuery(
+            "select m from Movie m where m.length between :minLen and :maxLen order by m.length asc", Movie.class)
+            .setParameter("minLen", minLen)
+            .setParameter("maxLen", maxLen)
+            .getResultList();
+    }
+
+    @Override
+    public List<Movie> getMovieByRanking(int minRank, int maxRank) {
+        if (minRank <= 0 || minRank > 5 || maxRank <= 0 || maxRank > 5) return List.of();
+
+        return em.createQuery(
+                "select m from Movie m where m.ranking between :minRank and :maxRank order by m.ranking asc",
+                Movie.class)
+            .setParameter("minRank", minRank)
+            .setParameter("maxRank", maxRank)
+            .getResultList();
+
+    }
+
+    @Override
+    public List<Movie> getMovieByLanguage(Language language) {
+        if (language == null){
+            return List.of();
+        }
+
+        return em.createQuery(
+            "select m from Movie m where language = :language", Movie.class)
+            .setParameter("language", language)
+            .getResultList();
+
+    }
+
+    @Override
+    public List<Movie> getAllMovies() {
+        return em.createQuery("SELECT m FROM Movie m", Movie.class).getResultList();
+    }
+
     public boolean deleteMovie(long id) {
         Movie movie = em.find(Movie.class, id);
         if (movie != null) {
@@ -121,31 +174,47 @@ public class MovieRepoJpa {
         return false;
     }
 
+    @Override
+    public Optional<Movie> getById(Long id) {
+        return Optional.ofNullable(em.find(Movie.class, id));
+    }
+
+    public List<Movie> getMovieByGenre (String genre) {
+        if (genre == null){
+            return List.of();
+        }
+
+        return em.createQuery(
+            "select m from Movie m join m.genres g where g.genreName = :genreName",
+            Movie.class)
+            .setParameter("genreName", genre)
+            .getResultList();
+
+    }
+
     // Hjälpmetoder för relationer
-    @Transactional
     public void setDirector(String title, Director director) {
-        Movie m = findByTitleOptional(title).orElse(null);
+        Movie m = findByTitle(title).orElse(null);
         if (m != null) {
             m.setDirector(director);
             em.merge(m);
         }
     }
-
-    @Transactional
     public void addActors(String title, List<Actor> actors) {
-        Movie m = findByTitleOptional(title).orElse(null);
+        Movie m = findByTitle(title).orElse(null);
         if (m != null) {
             m.getActors().addAll(actors);
             em.merge(m);
         }
     }
-
-    @Transactional
     public void addGenres(String title, List<Genre> genres) {
-        Movie m = findByTitleOptional(title).orElse(null);
+        Movie m = findByTitle(title).orElse(null);
         if (m != null) {
             m.getGenres().addAll(genres);
             em.merge(m);
         }
     }
+
+
+
 }
