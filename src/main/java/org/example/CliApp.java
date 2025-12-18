@@ -62,20 +62,19 @@ public class CliApp {
             case 3 -> {
                 System.out.println("Enter User ID: ");
                 long userID = sc.nextLong();
+                sc.nextLine();
                 System.out.println("Enteer movie title: ");
                 String title = sc.nextLine();
 
                 Optional<Movie> movieOpt = movieRepoJpa.findByTitle(title);
 
                 if (movieOpt.isPresent()) {
-                    userRepoJpa.removeFavoriteMovie(userID, movieOpt.get());
+                    Movie movie = movieOpt.get();
+                    userRepoJpa.removeFavoriteMovie(userID, movie);
                     System.out.println("Movie removed from favorites");
                 } else {
                     System.out.println("Movie not found");
                 }
-
-                userRepoJpa.removeFavoriteMovie(userID, title);
-                System.out.println("Movie removed from favorites");
             }
 
             case 4 -> {
