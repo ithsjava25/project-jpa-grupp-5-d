@@ -6,12 +6,19 @@ import jakarta.persistence.Persistence;
 import org.example.enums.Country;
 import org.example.enums.Language;
 import org.example.jpaimpl.MovieRepoJpa;
+import org.example.jpaimpl.UserRepoJpa;
 import org.example.pojo.*;
 import org.example.seed.*;
 import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -207,4 +214,31 @@ class AppTest {
         // Kontrollera att minst en user finns
         assertFalse(users.isEmpty());
     }
+    @Test
+    void testUserMenuFlow() {
+        String input = "1\n13\n2\n7\nTestfilm\n0\n";
+        // 1: hämta favoriter, 2: lägg till favorit, 0: exit
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(out));
+
+        UserRepoJpa userRepoMock = Mockito.mock(UserRepoJpa.class);
+        MovieRepoJpa movieRepoMock = Mockito.mock(MovieRepoJpa.class);
+
+        Movie testMovie = new Movie();
+        testMovie.setTitle("Testfilm");
+        Mockito.when(movieRepoMock.findByTitle("Testfilm"))
+            .thenReturn(Optional.of(testMovie));
+        Mockito.when(userRepoMock.getFavoriteMovies(123L))
+            .thenReturn(List.of(testMovie));
+
+        CliApp app = new CliApp();
+        app.optionsUser(userRepoMock, movieRepoMock, null);
+
+        String consoleOutput = out.toString();
+        assertTrue(consoleOutput.contains("Favorite movies:"));
+        assertTrue(consoleOutput.contains("Movie added to favorites"));
+    }
+
 }

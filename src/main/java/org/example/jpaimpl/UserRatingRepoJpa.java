@@ -82,8 +82,10 @@ public class UserRatingRepoJpa implements UserRatingRepo {
     }
 
     @Override
-    public void rateMovie(User user, Movie movie, float rating) {
-        if (user == null || movie == null) throw new IllegalArgumentException("User or Movie cannot be null");
+    public boolean rateMovie(User user, Movie movie, float rating) {
+        if (user == null || movie == null) {
+            return false;
+        }
 
         // Check if rating already exists
         Optional<UserRating> existing = em.createQuery(
@@ -114,6 +116,8 @@ public class UserRatingRepoJpa implements UserRatingRepo {
 
         movie.setRanking(avg);
         em.merge(movie);
+
+        return true;
 
     }
 

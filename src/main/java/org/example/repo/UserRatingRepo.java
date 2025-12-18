@@ -12,7 +12,7 @@ public interface UserRatingRepo {
     Optional<Float> getRatingForMovieByUser(User user, Movie movie);
     Optional<Double> getAverageRatingForMovie(Movie movie);
 
-    void rateMovie(User user, Movie movie, float rating);
+    boolean rateMovie(User user, Movie movie, float rating);
 
     List<Movie> getMoviesByRating(float minRating, float maxRating);
     List<UserRating> getRatingsByUser(User user);
