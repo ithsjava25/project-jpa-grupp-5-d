@@ -269,76 +269,78 @@ public class CliApp {
         boolean running = true;
         while (running) {
 
-            int choice = sc.nextInt();
-            sc.nextLine();
+            String option = sc.nextLine();
+            int choice;
+            try {
+                choice = Integer.parseInt(option);
 
-            switch (choice) {
+                switch (choice) {
+                    // Rate a movie
+                    case 1 -> {
+                        System.out.println("***** You have selected to rate a movie *****");
+                        System.out.print("What movie would you like to rate? (Title): ");
+                        String title = sc.nextLine();
+                        Optional<Movie> movieOpt = movieRepoJpa.findByTitle(title);
+                        if (movieOpt.isEmpty()) {
+                            System.out.println("Movie not found. Please try again.");
+                            continue;
+                        }
 
-                case 1 -> {
-                    System.out.println("***** You have selected to rate a movie *****");
-                    System.out.print("What movie would you like to rate? (Title): ");
-                    String title = sc.nextLine();
-                    Optional<Movie> movieOpt = movieRepoJpa.findByTitle(title);
-                    if (movieOpt.isEmpty()) {
-                        System.out.println("Movie not found. Please try again.");
-                        return;
+                        System.out.print("What would you like to rate the movie? (1-5): ");
+                        String rateString = sc.nextLine();
+
+                        try {
+                            float rating = Float.parseFloat(rateString);
+
+                            if (rating >= 1.0f && rating <= 5.0f) {
+                                movieOpt.ifPresent(movie -> userRatingRepoJpa.rateMovie(user, movie, rating));
+                                System.out.println("You succefully rated a movie!!");
+                            } else {
+                                System.out.println("Please enter a valid rating");
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid input. You must enter a numeric value.");
+                        }
                     }
+                    // Movies that you rated
+                    case 2 -> {
+                        System.out.println("***** You want to get all the movies that you rated *****");
 
-                    System.out.print("What would you like to rate the movie? (1-5): ");
-                    String rateString = sc.nextLine();
+                        List<Movie> ratedMovies = userRatingRepoJpa.getMoviesRatedByUser(user);
 
-                    try {
-                        float rating = Float.parseFloat(rateString);
-
-                        if (rating >= 1.0f && rating <= 5.0f) {
-                            movieOpt.ifPresent(movie -> userRatingRepoJpa.rateMovie(user, movie, rating));
-                            System.out.println("You succefully rated a movie!!");
+                        if (ratedMovies.isEmpty()) {
+                            System.out.println("You haven't rated any movies yet.");
                         } else {
-                            System.out.println("Please enter a valid rating");
-                        }
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid input. You must enter a numeric value.");
-                    }
-                }
-
-                case 2 -> {
-                    System.out.println("***** You want to get all the movies that you rated *****");
-
-                    List<Movie> ratedMovies = userRatingRepoJpa.getMoviesRatedByUser(user);
-
-                    if (ratedMovies.isEmpty()) {
-                        System.out.println("You haven't rated any movies yet.");
-                    } else {
-                        System.out.println("Here are the movies you have rated: ");
-                        for (Movie m : ratedMovies) {
-                            System.out.println("- " + m.getTitle());
+                            System.out.println("Here are the movies you have rated: ");
+                            for (Movie m : ratedMovies) {
+                                System.out.println("- " + m.getTitle());
+                            }
                         }
                     }
-                }
-                case 3 -> {
-                    System.out.println("**** You want to get rating for a specific movie ****");
-                    System.out.print("What movie title would you like to get your ratings from? ");
-                    String title = sc.nextLine();
+                    // Get rating for a movie
+                    case 3 -> {
+                        System.out.println("**** You want to get rating for a specific movie ****");
+                        System.out.print("What movie title would you like to get your ratings from? ");
+                        String title = sc.nextLine();
 
-                    Optional<Movie> movieOpt = movieRepoJpa.findByTitle(title);
-                    if (movieOpt.isEmpty()) {
-                        System.out.println("Movie not found. Please try again.");
-                        return;
+                        Optional<Movie> movieOpt = movieRepoJpa.findByTitle(title);
+                        if (movieOpt.isEmpty()) {
+                            System.out.println("Movie not found. Please try again.");
+                            continue;
+                        }
+                        movieOpt.ifPresent(movie -> userRatingRepoJpa.getRatingForMovieByUser(user, movie));
+
                     }
-                    movieOpt.ifPresent(m -> userRatingRepoJpa.getRatingForMovieByUser(user, m));
-
-
-                /*
-                Optional<Float> getRatingForMovieByUser(User user, Movie movie);
-                 */
+                    // Print options again
+                    case 4 -> printOptionsUserRating();
+                    // Exit
+                    case 0 -> {
+                        System.out.println("Exiting program...");
+                        running = false;
+                    }
                 }
-
-                case 4 -> System.out.println("Show options again");
-                case 0 -> {
-                    System.out.println("Exiting program...");
-                    running = false;
-                }
-
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. You must enter a numeric value.");
             }
         }
     }
@@ -349,8 +351,8 @@ public class CliApp {
                             1. Rate a movie
                             2. Get movies that you rated
                             3. Get your rating for a movie
+                            4. Show options again
                             0. Exit
-                            00. Show Options again
                             """);
     }
     public void printOptionsMovie(){
@@ -381,45 +383,3 @@ public class CliApp {
                             """);
     }
 }
-
-/*
-        User:
-        1. Update password (userId, password)
-        2. Get favorite movies (UserId)
-        3. Add favorite movie (userId, movie)
-        4. Remove favorite movie (userId, movie)
-
-        UserRating:
-        1. Rate a movie (user, movie, rating)
-        2. Get movies that you rated (user)
-        4. Get your rating for a movie (user, movie)
-
-        Movie:
-        1. List all movies
-        2. List movies by language (language)
-        3. List movies by ranking (min rank, max rank)
-        4. List movies by length (min length, max length)
-        5. List movies by release date (from, to)
-        6. List movies by actor (actor)
-        7. List movies by director (director)
-        8. List all movies by genre (NOT IMPLEMENTED)
-        9. Find a movie by title (title)
-
-
-        Admin usecase:
-        1. Add new user (userName, password)
-        2. Delete user (userId)
-        3. Add a new movie (title, date YYYY-MM-DD, length in minutes, country, language)
-        4. Delete movie (id)
-        5. Add an actor to a movie (movieId, actorId) OR (movie, actor)
-        6. Add a director to a movie (movieId, directorId)
-        7. Add a new Genre (genreName) ***** ta bort? enum?
-        8. Delete a genre (genreId)
-        9. Add a new actor (actorname, country)
-        10. Delete an actor (id)
-        11. Add a new Director (directorName, country)
-        12. Delete a director (id)
-        13. Find users by username (userName)
-
-
-         */
