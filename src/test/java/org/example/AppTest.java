@@ -32,7 +32,6 @@ class AppTest {
             ));
     }
 
-
     @BeforeEach
     void setup() {
         em = emf.createEntityManager();

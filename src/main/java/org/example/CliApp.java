@@ -63,7 +63,7 @@ public class CliApp {
                 System.out.println("Enter User ID: ");
                 long userID = sc.nextLong();
                 sc.nextLine();
-                System.out.println("Enteer movie title: ");
+                System.out.println("Enter movie title: ");
                 String title = sc.nextLine();
 
                 Optional<Movie> movieOpt = movieRepoJpa.findByTitle(title);
@@ -139,6 +139,8 @@ public class CliApp {
                     int maxRank = sc.nextInt();
                     sc.nextLine();
 
+
+
                     movieRepoJpa.getMovieByRanking(minRank, maxRank)
                         .forEach(m-> System.out.println(m.getTitle()
                         + " rank: " + m.getRanking()));
@@ -169,8 +171,34 @@ public class CliApp {
                         + " date: " + m.getReleaseDate()));
                 }
 
-                // ====== List movies made by an actor ======
+                // ====== LIST MOVIES BY ACTOR ======
                 case 6 -> {
+                    System.out.println("Enter Actor name: ");
+                    String actorName = sc.nextLine();
+                    movieRepoJpa.getMoviesByActor(actorName)
+                        .forEach(m-> System.out.println("- " + m.getTitle()));
+                }
+
+                // ====== LIST MOVIES BY DIRECTOR ======
+                case 7 -> {
+                    System.out.println("Enter Direcotor name: ");
+                    String directorName = sc.nextLine();
+                    movieRepoJpa.getMoviesByDirector(directorName)
+                        .forEach(m-> System.out.println("- " + m.getTitle()));
+                }
+
+                // ====== FIND MOVIES BY GENRE ======
+                case 8 -> {
+                    System.out.println("Enter Genre: ");
+                    String genreName = sc.nextLine();
+                    movieRepoJpa.getMovieByGenre(genreName)
+                        .forEach(m-> System.out.println("- " + m .getTitle()));
+
+                }
+
+                // ====== FIND MOVIES BY TITLE ======
+                case 9 -> {
+
                 }
 
                 case 0 -> {
@@ -178,7 +206,7 @@ public class CliApp {
                 running = false;
                 }
 
-                case 8 -> {
+                case 10 -> {
                     printOptionsMovie();
                 }
 

@@ -20,14 +20,14 @@ public class App {
 
         Scanner sc = new Scanner(System.in);
 
-        final PersistenceConfiguration cfg = new HibernatePersistenceConfiguration( "emf" )
-            .jdbcUrl( "jdbc:mysql://localhost:3306/codeTraumaTeam" )
-            .jdbcUsername( "user" )
-            .jdbcPassword( "password" )
-            .property("hibernate.hbm2ddl.auto","update")
-            .property("hibernate.show_sql","true")
-            .property("hibernate.format_sql","true")
-            .property("hibernate.highlight_sql","true")
+        final PersistenceConfiguration cfg = new HibernatePersistenceConfiguration("emf")
+            .jdbcUrl("jdbc:mysql://localhost:3306/codeTraumaTeam")
+            .jdbcUsername("user")
+            .jdbcPassword("password")
+            .property("hibernate.hbm2ddl.auto", "update")
+            .property("hibernate.show_sql", "true")
+            .property("hibernate.format_sql", "true")
+            .property("hibernate.highlight_sql", "true")
             .managedClasses(Actor.class, Director.class, Genre.class, Movie.class, User.class, UserRating.class);
 
         // Seeding database
@@ -35,7 +35,7 @@ public class App {
              EntityManager em = emf.createEntityManager()) {
 
             EntityTransaction tx = em.getTransaction();
-            try{
+            try {
                 tx.begin();
 
                 // 1. Seeding base entities
@@ -104,7 +104,7 @@ public class App {
                         User user = optionalUser.get();
                         System.out.println("Your userID is: " + user.getId());
 
-                        if (user.getUserName().equals("admin")){
+                        if (user.getUserName().equals("Admin")){
 
                             CliAdminApp cliAdminApp = new CliAdminApp(em);
                             cliAdminApp.printOptions();
@@ -159,3 +159,4 @@ public class App {
                             """);
     }
 }
+

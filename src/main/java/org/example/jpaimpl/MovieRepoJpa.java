@@ -99,7 +99,11 @@ public class MovieRepoJpa implements MovieRepo {
             return Optional.empty();
         }
 
-        return Optional.ofNullable(em.find(Movie.class, title));
+        return em.createQuery("SELECT m FROM Movie m WHERE m.title = :title", Movie.class)
+            .setParameter("title", title.trim())
+            .getResultStream()
+            .findFirst();
+
     }
 
     @Override
