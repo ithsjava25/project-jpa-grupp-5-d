@@ -81,5 +81,40 @@ public class UserRatingRepoJpa implements UserRatingRepo {
             .findFirst();
     }
 
+    @Override
+    public void rateMovie(User user, Movie movie, float rating) {
+        if (user == null || movie == null) throw new IllegalArgumentException("User or Movie cannot be null");
+
+        // Check if rating already exists
+        Optional<UserRating> existing = em.createQuery(
+                "SELECT ur FROM UserRating ur WHERE ur.user = :user AND ur.movie = :movie",
+                UserRating.class)
+            .setParameter("user", user)
+            .setParameter("movie", movie)
+            .getResultStream()
+            .findFirst();
+
+        // If already rated, update rating
+        UserRating userRating;
+        if (existing.isPresent()) {
+            userRating = existing.get();
+            userRating.setRating(rating);
+            em.merge(userRating);
+        } else {
+            userRating = new UserRating(user, movie, rating);
+            em.persist(userRating);
+        }
+
+        // Update movie ranking
+        Double avg = em.createQuery(
+                "SELECT AVG(ur.rating) FROM UserRating ur WHERE ur.movie = :movie",
+                Double.class)
+            .setParameter("movie", movie)
+            .getSingleResult();
+
+        movie.setRanking(avg);
+        em.merge(movie);
+
+    }
 
 }

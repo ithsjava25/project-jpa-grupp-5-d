@@ -8,41 +8,39 @@ import java.util.*;
 @Entity
 public class Genre{
 
+    // Fields
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int genreID;
-
     @Column (name = "genre", length = 100)
     private String genreName;
-
     @ManyToMany(mappedBy = "genres")
     private Set<Movie> movies = new HashSet<>();
-    //Mottagare, mapped By, dessa filmer finns inom X genre
-    //tillåter inte dupletter
-    //ingen ordning - sorteras utefter ID eller av användaren genom select
 
+    // Konstruktors
     public Genre(){}
-
     public Genre(int genreID, String name){
         this.genreID = genreID;
         this.genreName = name;
     }
 
+    // Getters and setters
     public int getGenreID(){
         return genreID;
     }
-
     public void setGenreID(int genreID){
         this.genreID = genreID;
     }
-
     public String getName(){
         return genreName;
     }
-
     public void setName(String name){
         this.genreName = name;
     }
+    public String getGenreName() {return genreName;}
+    public void setGenreName(String genreName) {this.genreName = genreName;}
+    public Set<Movie> getMovies() {return movies;}
+    public void setMovies(Set<Movie> movies) {this.movies = movies;}
 
     @Override
     public String toString() {
@@ -52,24 +50,14 @@ public class Genre{
             '}';
     }
 
-    public String getGenreName() {return genreName;}
-
-    public void setGenreName(String genreName) {this.genreName = genreName;}
-
-    public Set<Movie> getMovies() {return movies;}
-
-    public void setMovies(Set<Movie> movies) {this.movies = movies;}
-
+    // Equals and hashcode
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Genre genre = (Genre) o;
-        return genreID == genre.genreID && Objects.equals(genreName, genre.genreName)
-            && Objects.equals(movies, genre.movies);
+        if (!(o instanceof Genre genre)) return false;
+        return genreID == genre.genreID;
     }
-
     @Override
     public int hashCode() {
-        return Objects.hash(genreID, genreName, movies);
+        return Objects.hashCode(genreID);
     }
 }

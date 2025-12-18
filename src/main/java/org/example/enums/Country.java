@@ -14,5 +14,7 @@ public enum Country {
     NEW_ZEALAND,
     TAIWAN,
     MEXICO,
-    UK;
+    UK,
+    KENYA,
+    PUERTO_RICO;
 }

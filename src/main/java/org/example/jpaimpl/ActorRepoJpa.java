@@ -40,8 +40,6 @@ public class ActorRepoJpa implements ActorRepo {
         }
     }
 
-
-
     @Override
     public boolean deleteActor(long id) {
         Actor actor = em.find(Actor.class, id);

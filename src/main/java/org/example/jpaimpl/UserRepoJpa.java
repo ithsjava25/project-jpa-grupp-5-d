@@ -3,10 +3,11 @@ package org.example.jpaimpl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
+import org.example.pojo.Movie;
 import org.example.pojo.User;
 import org.example.repo.UserRepo;
 
+import java.util.List;
 import java.util.Optional;
 
 public class UserRepoJpa implements UserRepo {
@@ -37,6 +38,18 @@ public class UserRepoJpa implements UserRepo {
         }
     }
 
+    @Override
+    public Optional<User> findByUserName(String userName) {
+        if (userName == null) return Optional.empty();
+
+        return em.createQuery(
+                "SELECT u FROM User u WHERE u.userName = :userName",
+                User.class
+            )
+            .setParameter("userName", userName)
+            .getResultStream()
+            .findFirst();
+    }
 
     @Override
     public boolean updatePassword(long userId, String newPassword) {
@@ -47,6 +60,7 @@ public class UserRepoJpa implements UserRepo {
         if (user == null) return false;
 
         user.setPassword(newPassword);
+        em.merge(user);
 
         return true;
     }
@@ -90,4 +104,32 @@ public class UserRepoJpa implements UserRepo {
         }
 
     }
+
+    @Override
+    public void addFavoriteMovie(long userId, Movie movie) {
+        User user = em.find(User.class, userId);
+        if (user == null || movie == null) return;
+
+        user.addFavoriteMovie(movie);
+        em.merge(user); // persist the updated relationship
+    }
+
+    @Override
+    public boolean removeFavoriteMovie(long userId, Movie movie) {
+        User user = em.find(User.class, userId);
+        if (user == null || movie == null) return false;
+
+        user.removeFavoriteMovie(movie);
+        em.merge(user);
+        return true;
+    }
+
+    @Override
+    public List<Movie> getFavoriteMovies(long userId) {
+        User user = em.find(User.class, userId);
+        if (user == null) return List.of();
+
+        return List.copyOf(user.getFavoriteMovies());
+    }
+
 }
