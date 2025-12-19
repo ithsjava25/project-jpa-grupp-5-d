@@ -120,12 +120,20 @@ public class MovieRepoJpa implements MovieRepo {
     public List<Movie> getMovieByReleaseDate(String from, String to) {
         if (from == null || to == null || from.isEmpty() || to.isEmpty()) return List.of();
 
+        LocalDate fromDate = LocalDate.parse(from);
+        LocalDate toDate = LocalDate.parse(to);
+
         return em.createQuery(
-            "select m from Movie m where m.date between :from and :to order by m.date asc", Movie.class)
-            .setParameter("from", from)
-            .setParameter("to", to)
+                "select m from Movie m " +
+                    "where m.releaseDate between :from and :to " +
+                    "order by m.releaseDate asc",
+                Movie.class)
+            .setParameter("from", fromDate)
+            .setParameter("to", toDate)
             .getResultList();
     }
+
+
 
     @Override
     public List<Movie> getMovieByLength(int minLen, int maxLen) {

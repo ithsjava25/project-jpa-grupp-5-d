@@ -17,6 +17,39 @@ import org.example.pojo.Genre;
 
 public class CliApp {
 
+    public void runUserMenu(Scanner sc,
+                                    UserRepoJpa userRepoJpa,
+                                    UserRatingRepoJpa userRatingRepoJpa,
+                                    MovieRepoJpa movieRepoJpa,
+                                    User user) {
+        String choice;
+        do {
+            showMenuOptions();
+            choice = sc.nextLine();
+
+            try {
+                int number = Integer.parseInt(choice);
+
+                switch (number) {
+                    case 1 -> optionsUser(userRepoJpa, movieRepoJpa, user);
+                    case 2 -> optionsUserRating(movieRepoJpa, userRatingRepoJpa, user);
+                    case 3 -> optionsMovies(movieRepoJpa, user);
+                    default -> {
+                        System.out.println("Exiting the menu...");
+                        return;
+                    }
+                }
+
+                System.out.println("*******************************");
+                System.out.println("Do you want to continue? (Y/N)");
+                choice = sc.nextLine().toUpperCase();
+
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a numeric value");
+            }
+        } while (choice.equals("Y"));
+    }
+
     public void optionsUser(UserRepoJpa userRepoJpa,
                             MovieRepoJpa movieRepoJpa,
                             User user) {
@@ -44,8 +77,6 @@ public class CliApp {
                         System.out.println("- " + movie.getTitle()));
                 }
 
-                userRepoJpa.getFavoriteMovies(userID)
-                    .forEach(System.out::println);
             }
             case 2 -> {
                 System.out.println("Enter User ID: ");
@@ -169,7 +200,7 @@ public class CliApp {
                     System.out.println("***** You have selected to list movies by date *****");
                     System.out.println("Enter release Date from: ");
                     String from = sc.nextLine();
-                    System.out.println("Enter release Date toi: ");
+                    System.out.println("Enter release Date to: ");
                     String to = sc.nextLine();
 
                     movieRepoJpa.getMovieByReleaseDate(from, to)
@@ -242,11 +273,43 @@ public class CliApp {
 
                     if (movieOpt.isPresent()) {
                         Movie found = movieOpt.get();
-                        System.out.println("Movie found: " + found.getTitle());
-                    } else {
-                        System.out.println("Movie not found: " + movie.getTitle());
+                        System.out.println("===== MOVIE FOUND =====");
+
+                        // --TITLE
+                        System.out.println("Title: " + found.getTitle());
+
+                        // -- RELEASE DATE
+                        System.out.println("Release date: " + movie.getReleaseDate());
+
+                        // -- DIRECTOR
+                        if (movie.getDirector() != null) {
+                            System.out.println("Director: " + movie.getDirector().getDirectorName());
+                        } else {
+                            System.out.println("No directors found");
+                        }
+
+                        // -- ACTOR
+                        if (movie.getActors() != null && !movie.getActors().isEmpty()) {
+                            System.out.println("Actors: ");
+                            movie.getActors().forEach(a -> System.out.println(a.getActorName() + ", "));
+                            System.out.println();
+                        } else {
+                            System.out.println("No actors found");
+
+                            // -- GENRES
+                            if (movie.getGenres() != null && !movie.getGenres().isEmpty()) {
+                                System.out.println("Genre: ");
+                                movie.getGenres().forEach(g -> System.out.println(g.getName() + ", "));
+                                System.out.println();
+                            } else {
+                                System.out.println("No genres found");
+                            }
+                            System.out.println("========================\n");
+                        }
+                        } else {
+                            System.out.println("Movie not found: " + movie.getTitle());
+                        }
                     }
-                }
 
                 case 0 -> {
                     System.out.println("Exiting program...");
@@ -347,7 +410,7 @@ public class CliApp {
 
     public void printOptionsUserRating(){
         System.out.println("""
-                            ======== USER RATING MENUE ========
+                            ======== USER RATING MENU ========
                             1. Rate a movie
                             2. Get movies that you rated
                             3. Get your rating for a movie
@@ -357,7 +420,7 @@ public class CliApp {
     }
     public void printOptionsMovie(){
         System.out.println("""
-                            ======== MOVIE MENUE ========
+                            ======== MOVIE MENU ========
                             1. List all movies
                             2. List movies by language
                             3. List movies by ranking
@@ -380,6 +443,15 @@ public class CliApp {
                             4. Find users by username
                             0. Exit
                             00. Show Options again
+                            """);
+    }
+    public void showMenuOptions(){
+        System.out.println("""
+                            ======== WHAT WOULD YOU LIKE TO DO? ========
+                            1. Show User Menu
+                            2. Show User Rating Menu
+                            3. Show Movie Menu
+                            Press any key to exit
                             """);
     }
 }

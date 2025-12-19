@@ -1,94 +1,71 @@
 package org.example;
 
+import jakarta.persistence.EntityManager;
 import org.example.jpaimpl.MovieRepoJpa;
 import org.example.jpaimpl.UserRatingRepoJpa;
 import org.example.jpaimpl.UserRepoJpa;
 import org.example.pojo.*;
 import org.example.seed.*;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 
 import static org.example.DatabaseFiller.isDatabaseEmpty;
 
 public class App {
-    static void main(String[] args) {
+    public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
 
-        JpaRunner.runInTranscation(em -> {
-            if(isDatabaseEmpty(em)){
+        // ✅ Endast seedning körs i transaktion
+        JpaRunner.runInTransaction(em -> {
+            if (isDatabaseEmpty(em)) {
                 DatabaseFiller filler = new DatabaseFiller(em);
                 filler.seedAll();
             } else {
-                System.out.println("Database already contain Movies. If other data is missing disable function and run filler.seedAll()");
+                System.out.println("Database already contains Movies. If other data is missing disable function and run filler.seedAll()");
             }
         });
 
-
-        JpaRunner.runInTranscation(em -> {
-            UserRepoJpa userRepo = new UserRepoJpa(em);
+        // ✅ Öppna en EM för CLI
+        try (EntityManager em = JpaUtil.getEntityManager()) {
+            UserRepoJpa userRepoJpa = new UserRepoJpa(em);
             UserRatingRepoJpa userRatingRepoJpa = new UserRatingRepoJpa(em);
             MovieRepoJpa movieRepoJpa = new MovieRepoJpa(em);
 
-            String answer;
+            Optional<User> optionalUser = Optional.empty();
 
-            do {
+            // 🔁 Retry loop only for login
+            while (optionalUser.isEmpty()) {
                 System.out.println("**** Welcome to IMDB CLI Application ****");
                 System.out.print("Please enter your username: ");
                 String userName = sc.nextLine();
                 System.out.print("Please enter your password: ");
                 String password = sc.nextLine();
 
-                Optional<User> optionalUser = userRepo.validateUser(userName, password);
-                //Add check for Admin login
-                if (optionalUser.isPresent()) {
-                    System.out.println("**** You logged in succesfully ****");
-                    User user = optionalUser.get();
-                    System.out.println("Your userID is: " + user.getId());
+                optionalUser = userRepoJpa.validateUser(userName, password);
 
-                    if (user.getUserName().equals("Admin")){
-                        CliAdminApp cliAdminApp = new CliAdminApp(em);
-                        cliAdminApp.printOptions();
-                    } else {
-                        CliApp cliApp = new CliApp();
-                        showMenueOptions();
-
-                        String choice = sc.nextLine();
-                        int number = Integer.parseInt(choice);
-
-                        if (number == 1){
-                            cliApp.optionsUser(userRepo, movieRepoJpa, user);
-                        } else if (number == 2) {
-                            cliApp.optionsUserRating(movieRepoJpa, userRatingRepoJpa, user);
-                        } else if (number == 3) {
-                            cliApp.optionsMovies(movieRepoJpa, user);
-                        } else {
-                            answer = "N";
-                            continue;
-                        }
-                    }
-                } else {
+                if (optionalUser.isEmpty()) {
                     System.out.println("Either your username or password was incorrect.");
+                    System.out.println("Do you want to try again? (Y/N)");
+                    String retry = sc.nextLine().toUpperCase();
+                    if (!retry.equals("Y")) {
+                        System.out.println("Exiting application...");
+                        return;
+                    }
                 }
+            }
+            // ✅ Successful login → no more retries
+            User user = optionalUser.get();
+            System.out.println("**** You logged in successfully ****");
+            System.out.println("Your userID is: " + user.getId());
 
-                System.out.println("*********************************");
-                System.out.println("Do you want to try again? (Y/N)");
-                answer = sc.nextLine().toUpperCase();
-
-                } while (answer.equals("Y"));
-            });
-    }
-
-    public static void showMenueOptions(){
-        System.out.println("""
-                            ======== WHAT WOULD YOU LIKE TO DO? ========
-                            1. Show User Menu
-                            2. Show User Rating Menu
-                            3. Show Movie Menu
-                            Press any key to exit
-                            """);
+            if (user.getUserName().equals("Admin")) {
+                new CliAdminApp(em).printOptions();
+            } else {
+                new CliApp().runUserMenu(sc, userRepoJpa, userRatingRepoJpa, movieRepoJpa, user);
+            }
+        }
     }
 }
 

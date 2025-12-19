@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 
 public class JpaRunner {
 
-    public static void runInTranscation(Consumer<EntityManager> action){
+    public static void runInTransaction(Consumer<EntityManager> action){
         EntityManager em = JpaUtil.getEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
