@@ -18,10 +18,6 @@ public interface MovieRepo {
     Optional<Movie> getById(Long id);
     Optional<Movie>  findByTitle(String title);
 
-    void addActorToMovie(Long movieId, Long actorId);
-    void addActorToMovie(Movie movie, Actor actor);
-    void setDirector(Long movieId, Long directorId);
-
     List<Movie> getByDirector(Director director);
     List<Movie> getByActor(Actor actor);
     List<Movie> getMovieByReleaseDate(String from, String to);
@@ -29,4 +25,5 @@ public interface MovieRepo {
     List<Movie> getMovieByRanking(int minRank, int maxRank);
     List<Movie> getMovieByLanguage(Language language);
     List<Movie> getAllMovies();
+    List<Movie> getMovieByGenre (String genre);
 }

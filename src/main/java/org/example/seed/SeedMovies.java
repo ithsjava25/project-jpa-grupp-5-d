@@ -92,7 +92,6 @@ public class SeedMovies {
             i++;
             if (i % 20 == 0) {
                 em.flush();
-                em.clear();
             }
 
         }

@@ -24,7 +24,7 @@ public class UserRating {
 
     // Konstruktors
     public UserRating() {}
-    public UserRating(User user, Movie movie, float rating) {
+    public UserRating(User user, Movie movie, double rating) {
         this.user = user;
         this.movie = movie;
         this.rating = rating;
@@ -52,7 +52,7 @@ public class UserRating {
     public double getRating() {
         return rating;
     }
-    public void setRating(float rating) {
+    public void setRating(double rating) {
         this.rating = rating;
     }
 

@@ -49,6 +49,20 @@ public class ActorRepoJpa implements ActorRepo {
         }
         return false;
     }
+    public boolean deleteByName(String name) {
+        Actor actor = em.createQuery("SELECT a FROM Actor a WHERE a.actorName = :name", Actor.class)
+            .setParameter("name", name)
+            .getResultStream()
+            .findFirst()
+            .orElse(null);
+
+        if (actor == null) {
+            return false; // ingen actor hittades
+        }
+
+        em.remove(actor);
+        return true; // actor togs bort
+    }
 
     @Override
     public Optional<Actor> findById(Long id) {
