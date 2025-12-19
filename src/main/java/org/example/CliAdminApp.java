@@ -1,29 +1,22 @@
 package org.example;
-import jakarta.persistence.EntityManager;
 import org.example.enums.Country;
 import org.example.enums.Language;
 import org.example.jpaimpl.*;
-import org.example.pojo.Actor;
-import org.example.pojo.Director;
-import org.example.pojo.Genre;
-import org.example.pojo.Movie;
-import org.example.seed.SeedUsers;
+import org.example.pojo.User;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class CliAdminApp {
 
-    private final EntityManager em;
-
-    public CliAdminApp(EntityManager em) {
-        this.em = em;
-    }
-
-    public void printOptions() {
-        Scanner scan = new Scanner(System.in);
+    public void adminOptions(Scanner sc,
+                             User user) {
         boolean running = true;
+
+        System.out.println("**** Welcome to the Admin Menu ****");
 
         while (running) {
             System.out.println("""
@@ -50,56 +43,95 @@ public class CliAdminApp {
             switch (choice) {
                 case 1 -> {
                     System.out.println("Enter a Username:");
-                    String userName = scan.nextLine();
+                    String userName = sc.nextLine().trim();
 
                     System.out.println("Enter a password for the user:");
-                    String password = scan.nextLine();
+                    String password = sc.nextLine().trim();
 
-                    UserRepoJpa userRepo = new UserRepoJpa(em);
-
-                    em.getTransaction().begin();
-                    userRepo.addUser(userName, password);
-                    em.getTransaction().commit();
-
-                    System.out.println("New user added! It will be available on next startup of the program.");
+                    if (userName.isEmpty() || password.isEmpty()) {
+                        System.out.println("Username and password cannot be empty.");
+                        break; // stop this case early
+                    }
+                    JpaRunner.runInTransaction(em -> {
+                        UserRepoJpa userRepo = new UserRepoJpa(em);
+                        userRepo.addUser(userName, password);
+                        System.out.println("New user '" + userName + "' added!");
+                    });
                 }
+                // DELETE A USER
                 case 2 -> {
                     System.out.println("Enter userId to delete:");
                     long userId = scan.nextLong();
 
-                    UserRepoJpa userRepo = new UserRepoJpa(em);
-
-                    em.getTransaction().begin();
-                    userRepo.deleteUser(userId);
-                    em.getTransaction().commit();
-
-                    System.out.println("User successfully deleted!");
+                    JpaRunner.runInTransaction(em -> {
+                        UserRepoJpa userRepo = new UserRepoJpa(em);
+                        var userOpt = userRepo.findByUserName(userName);
+                        if (userOpt.isEmpty()){
+                            System.out.println("No username found with username: " + userName);
+                        } else {
+                            long userId = userOpt.get().getId();
+                            userRepo.deleteUser(userId);
+                            System.out.println("User '" + userName + "' successfully deleted!");
+                        }
+                    });
                 }
                 case 3 -> {
                     //Add a new movie (title, date YYYY-MM-DD, length in minutes, country, language)
                     System.out.println("Enter the title of the movie:");
-                    String movie = scan.nextLine();
+                    String movie = sc.nextLine();
 
-                    System.out.println("Enter the date the movie was released in format YYYY-MM-DD:");
-                    String dateStr = scan.nextLine();
-                    LocalDate date = LocalDate.parse(dateStr);
+                    // --- Date ---
+                    LocalDate newDate = null;
+                    try {
+                        System.out.println("Enter the date (YYYY-MM-DD):");
+                        newDate = LocalDate.parse(sc.nextLine().trim());
+                    } catch (DateTimeParseException e) {
+                        System.out.println("Invalid date format. Please use YYYY-MM-DD.");
+                        return; // stop early
+                    }
 
-                    System.out.println("Enter the length of the movie in minutes:");
-                    int length = scan.nextInt();
+                    // --- Length ---
+                    int newLength = -1;
+                    try {
+                        System.out.println("Enter the length in minutes:");
+                        newLength = Integer.parseInt(sc.nextLine().trim());
+                        if (newLength <= 0) {
+                            System.out.println("Length must be a positive number.");
+                            return;
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid length. Please enter a number.");
+                        return;
+                    }
 
-                    scan.nextLine();
+                    // --- Country ---
+                    Country newCountry;
+                    try {
+                        System.out.println("Enter the country:");
+                        newCountry = Country.valueOf(sc.nextLine().trim().toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid country. Please enter one of: " + Arrays.toString(Country.values()));
+                        return;
+                    }
 
-                    System.out.println("Enter the country the movie is from:");
-                    Country country = Country.valueOf(scan.nextLine().trim().toUpperCase());
+                    // --- Language ---
+                    Language newLanguage;
+                    try {
+                        System.out.println("Enter the language:");
+                        newLanguage = Language.valueOf(sc.nextLine().trim().toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid language. Please enter one of: " + Arrays.toString(Language.values()));
+                        return;
+                    }
 
-                    System.out.println("Enter the language the movie is in:");
-                    Language language = Language.valueOf(scan.nextLine().trim().toUpperCase());
-
-                    MovieRepoJpa movieRepo = new MovieRepoJpa(em);
-                    em.getTransaction().begin();
-                    movieRepo.addMovie(movie, date, length, country, language);
-                    em.getTransaction().commit();
-                    System.out.println("Movie added!");
+                    // --- Transaction ---
+                    LocalDate finalNewDate = newDate;
+                    int finalNewLength = newLength;
+                    JpaRunner.runInTransaction(em -> {
+                        MovieRepoJpa movieRepo = new MovieRepoJpa(em);
+                        movieRepo.addMovie(movie, finalNewDate, finalNewLength, newCountry, newLanguage);
+                        System.out.println("Movie added!");
+                    });
                 }
                 case 4 -> {
                     System.out.println("Enter movieId to delete:");
@@ -124,50 +156,65 @@ public class CliAdminApp {
                     em.getTransaction().commit();
                     System.out.println("Actor " + actorName + " added to movie " + movieTitle + "!");
                 }
-
+                // ADD A DIRECTOR TO A MOVIE
                 case 6 -> {
                     System.out.println("Enter movie title:");
-                    String movieTitle = scan.nextLine();
+                    String movieTitle = sc.nextLine();
+
                     System.out.println("Enter director name:");
-                    String directorName = scan.nextLine();
-                    MovieRepoJpa movieRepo = new MovieRepoJpa(em);
-                    DirectorRepoJpa directorRepo = new DirectorRepoJpa(em);
-                    em.getTransaction().begin();
-                    Director director = directorRepo.findByName(directorName)
-                        .orElseThrow(() -> new RuntimeException("Director not found: " + directorName));
-                    movieRepo.setDirector(movieTitle, director);
-                    em.getTransaction().commit();
-                    System.out.println("Director " + directorName + " set for movie " + movieTitle + "!");
+                    String directorName = sc.nextLine();
+
+                    JpaRunner.runInTransaction(em -> {
+                        MovieRepoJpa movieRepo = new MovieRepoJpa(em);
+                        DirectorRepoJpa directorRepo = new DirectorRepoJpa(em);
+
+                        var directorOpt = directorRepo.findByName(directorName);
+                        if (directorOpt.isEmpty()) {
+                            System.out.println("No director found with name: " + directorName);
+                            return;
+                        }
+
+                        movieRepo.setDirector(movieTitle, directorOpt.get());
+                        System.out.println("Director '" + directorName + "' set for movie '" + movieTitle + "'!");
+                    });
                 }
+                // ADD A NEW GENRE
                 case 7 -> {
-                    //7. Add a new Genre(genreName) ***** ta bort? enum?
-                    System.out.println("Enter genre name to add:");
-                    String genre = scan.nextLine();
+                    System.out.println("Enter genre name:");
+                    String genre = sc.nextLine().trim();
 
-                    GenreRepoJpa genreRepo = new GenreRepoJpa(em);
-
-                    em.getTransaction().begin();
-                    genreRepo.addGenre(genre);
-                    em.getTransaction().commit();
-
-                    System.out.println("Genre added!");
-
-                }
-                case 8 -> {
-                    System.out.println("Enter genreId to delete:");
-                    long genreId = scan.nextLong();
-                    scan.nextLine();
-                    GenreRepoJpa genreRepo = new GenreRepoJpa(em);
-                    em.getTransaction().begin();
-                    boolean deleted = genreRepo.deleteGenre(genreId);
-                    em.getTransaction().commit();
-                    if (deleted) {
-                        System.out.println("Genre with id " + genreId + " deleted successfully!");
-                    } else {
-                        System.out.println("No genre found with id " + genreId);
+                    if (genre.isEmpty()) {
+                        System.out.println("Genre name cannot be empty.");
+                        break;
                     }
-                }
 
+                    JpaRunner.runInTransaction(em -> {
+                        GenreRepoJpa genreRepo = new GenreRepoJpa(em);
+                        genreRepo.addGenre(genre);
+                        System.out.println("Genre '" + genre + "' added!");
+                    });
+                }
+                // DELETE A GENRE
+                case 8 -> {
+                    System.out.print("Enter genreId to delete: ");
+                    String genreIdString = sc.nextLine();
+
+                    long genreId;
+                    try {
+                        genreId = Long.parseLong(genreIdString);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter a numeric value instead of: " + genreIdString);
+                        break;
+                    }
+
+                    long finalGenreId = genreId;
+                    JpaRunner.runInTransaction(em -> {
+                        GenreRepoJpa genreRepo = new GenreRepoJpa(em);
+                        boolean deleted = genreRepo.deleteGenre(finalGenreId);
+                        System.out.println(deleted ? "Genre deleted!" : "Genre not found.");
+                    });
+                }
+                // ADD A NEW ACTOR
                 case 9 -> {
                     System.out.println("Enter actor name:");
                     String actorName = scan.nextLine();
@@ -181,15 +228,26 @@ public class CliAdminApp {
                     System.out.println("Actor '" + actorName + "' added successfully!");
                 }
                 case 10 -> {
-                    System.out.println("Enter actor name to delete:");
-                    String actorName = scan.nextLine();
+                    System.out.print("Enter actor name to delete: ");
+                    String actorName = sc.nextLine().trim();
 
-                    ActorRepoJpa actorRepo = new ActorRepoJpa(em);
-                    em.getTransaction().begin();
-                    actorRepo.deleteByName(actorName);
-                    em.getTransaction().commit();
-                    System.out.println("Actor '" + actorName + "' deleted successfully!");
+                    if (actorName.isEmpty()) {
+                        System.out.println("Actor name cannot be empty.");
+                        break; // stop this case early
+                    }
+
+                    JpaRunner.runInTransaction(em -> {
+                        ActorRepoJpa actorRepo = new ActorRepoJpa(em);
+                        boolean deleted = actorRepo.deleteByName(actorName);
+
+                        if (deleted) {
+                            System.out.println("Actor '" + actorName + "' successfully deleted!");
+                        } else {
+                            System.out.println("No actor found with name: " + actorName);
+                        }
+                    });
                 }
+                // ADD A NEW DIRECTOR
                 case 11 -> {
                     //11. Add a new Director (directorName, country)
                     System.out.println("Enter director name to add:");
@@ -207,18 +265,26 @@ public class CliAdminApp {
                     System.out.println("Director added!");
                 }
                 case 12 -> {
-                    //12. Delete a director (id)
-                    System.out.println("Enter director name to delete:");
-                    String directorName = scan.nextLine();
+                    System.out.print("Enter director name to delete: ");
+                    String directorName = sc.nextLine().trim();
 
-                    DirectorRepoJpa directorRepo = new DirectorRepoJpa(em);
+                    if (directorName.isEmpty()) {
+                        System.out.println("Director name cannot be empty.");
+                        break; // stop this case early
+                    }
 
-                    em.getTransaction().begin();
-                    directorRepo.deleteByName(directorName);
-                    em.getTransaction().commit();
+                    JpaRunner.runInTransaction(em -> {
+                        DirectorRepoJpa directorRepo = new DirectorRepoJpa(em);
+                        boolean deleted = directorRepo.deleteByName(directorName);
 
-                    System.out.println("Director removed!");
+                        if (deleted) {
+                            System.out.println("Director '" + directorName + "' successfully deleted!");
+                        } else {
+                            System.out.println("No director found with name: " + directorName);
+                        }
+                    });
                 }
+                // FIND USERS BY USERNAME
                 case 13 -> {
                     System.out.println("Enter username to search:");
                     String userName = scan.nextLine();

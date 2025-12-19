@@ -63,7 +63,8 @@ public class App {
             System.out.println("Your userID is: " + user.getId());
 
             if (user.getUserName().equals("Admin")) {
-                new CliAdminApp(em).printOptions();
+                new CliAdminApp().adminOptions(sc,
+                    user);
             } else {
                 new CliApp(em).runUserMenu(sc,
                     userRepoJpa,

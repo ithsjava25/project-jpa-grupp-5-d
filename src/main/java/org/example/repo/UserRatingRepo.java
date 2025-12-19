@@ -9,12 +9,12 @@ import java.util.Optional;
 
 public interface UserRatingRepo {
 
-    Optional<Float> getRatingForMovieByUser(User user, Movie movie);
+    Optional<Double> getRatingForMovieByUser(User user, Movie movie);
     Optional<Double> getAverageRatingForMovie(Movie movie);
 
-    boolean rateMovie(User user, Movie movie, float rating);
+    boolean rateMovie(User user, Movie movie, double rating);
 
-    List<Movie> getMoviesByRating(float minRating, float maxRating);
+    List<Movie> getMoviesByRating(double minRating, double maxRating);
     List<UserRating> getRatingsByUser(User user);
     List<Movie> getMoviesRatedByUser(User user);
     List<Object[]> getAverageRatings();

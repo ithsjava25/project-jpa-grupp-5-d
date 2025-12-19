@@ -16,7 +16,7 @@ public class JpaUtil {
             .jdbcUsername("user")
             .jdbcPassword("password")
             .property("hibernate.hbm2ddl.auto", "update")
-            .property("hibernate.show_sql", "true")
+            .property("hibernate.show_sql", "false")
             .property("hibernate.format_sql", "true")
             .property("hibernate.highlight_sql", "true")
             .managedClasses(Actor.class, Director.class, Genre.class, Movie.class, User.class, UserRating.class);

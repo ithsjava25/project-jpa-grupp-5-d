@@ -18,7 +18,7 @@ public class UserRatingRepoJpa implements UserRatingRepo {
     }
 
     @Override
-    public List<Movie> getMoviesByRating(float minRating, float maxRating) {
+    public List<Movie> getMoviesByRating(double minRating, double maxRating) {
         return em.createQuery(
             "select ur.movie from UserRating ur where ur.rating between :min and :max", Movie.class)
             .setParameter("min", minRating)
@@ -57,12 +57,12 @@ public class UserRatingRepoJpa implements UserRatingRepo {
     }
 
     @Override
-    public Optional<Float> getRatingForMovieByUser(User user, Movie movie) {
+    public Optional<Double> getRatingForMovieByUser(User user, Movie movie) {
         if (user == null || movie == null) return Optional.empty();
 
         return em.createQuery(
                 "SELECT ur.rating FROM UserRating ur WHERE ur.user = :user AND ur.movie = :movie",
-                Float.class)
+                Double.class)
             .setParameter("user", user)
             .setParameter("movie", movie)
             .getResultStream()
@@ -82,7 +82,7 @@ public class UserRatingRepoJpa implements UserRatingRepo {
     }
 
     @Override
-    public boolean rateMovie(User user, Movie movie, float rating) {
+    public boolean rateMovie(User user, Movie movie, double rating) {
         if (user == null || movie == null) {
             return false;
         }

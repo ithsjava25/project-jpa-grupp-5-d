@@ -14,6 +14,7 @@ import org.example.repo.MovieRepo;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -134,18 +135,35 @@ public class MovieRepoJpa implements MovieRepo {
     public List<Movie> getMovieByReleaseDate(String from, String to) {
         if (from == null || to == null || from.isEmpty() || to.isEmpty()) return List.of();
 
-        LocalDate fromDate = LocalDate.parse(from, PLAIN_DATE);
-        LocalDate toDate = LocalDate.parse(to, PLAIN_DATE);
+        LocalDate fromDate;
+        LocalDate toDate;
 
-        return em.createQuery(
-                "select m from Movie m where m.releaseDate between :from and :to order by m.releaseDate asc",
-                Movie.class)
-            .setParameter("from", fromDate)
-            .setParameter("to", toDate)
-            .getResultList();
+        try {
+            fromDate = LocalDate.parse(from, PLAIN_DATE);
+            toDate = LocalDate.parse(from, PLAIN_DATE);
+        } catch (DateTimeParseException e){
+            System.out.print("Invalid date format. Expected pattern: " + PLAIN_DATE);
+            return List.of();
+        }
+
+        if (fromDate.isAfter(toDate)) {
+            System.out.println("From-date cannot be after to-date");
+            return List.of();
+        }
+
+        try {
+            return em.createQuery(
+                    "select m from Movie m where m.releaseDate between :from and :to order by m.releaseDate asc",
+                    Movie.class)
+                .setParameter("from", fromDate)
+                .setParameter("to", toDate)
+                .getResultList();
+        } catch (Exception e) {
+            System.out.println("Error executing query: " + e.getMessage());
+            return List.of();
+        }
+
     }
-
-
 
     @Override
     public List<Movie> getMovieByLength(int minLen, int maxLen) {
