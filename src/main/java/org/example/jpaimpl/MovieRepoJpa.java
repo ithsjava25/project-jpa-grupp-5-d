@@ -13,6 +13,7 @@ import org.example.pojo.Genre;
 import org.example.repo.MovieRepo;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -24,6 +25,8 @@ public class MovieRepoJpa implements MovieRepo {
     public MovieRepoJpa(EntityManager em) {
         this.em = em;
     }
+
+    private static final DateTimeFormatter PLAIN_DATE = DateTimeFormatter.ofPattern("yyyyMMdd");
 
 
     public Movie addMovie(String title,
@@ -108,25 +111,34 @@ public class MovieRepoJpa implements MovieRepo {
 
     @Override
     public List<Movie> getByDirector(Director director) {
-        return List.of();
+        return em.createQuery(
+                "select m from Movie m where m.director = :director",
+                Movie.class
+            )
+            .setParameter("director", director)
+            .getResultList();
     }
 
     @Override
     public List<Movie> getByActor(Actor actor) {
-        return List.of();
+        return em.createQuery(
+                "select m from Movie m join m.actors a where a = :actor",
+                Movie.class
+            )
+            .setParameter("actor", actor)
+            .getResultList();
     }
+
 
     @Override
     public List<Movie> getMovieByReleaseDate(String from, String to) {
         if (from == null || to == null || from.isEmpty() || to.isEmpty()) return List.of();
 
-        LocalDate fromDate = LocalDate.parse(from);
-        LocalDate toDate = LocalDate.parse(to);
+        LocalDate fromDate = LocalDate.parse(from, PLAIN_DATE);
+        LocalDate toDate = LocalDate.parse(to, PLAIN_DATE);
 
         return em.createQuery(
-                "select m from Movie m " +
-                    "where m.releaseDate between :from and :to " +
-                    "order by m.releaseDate asc",
+                "select m from Movie m where m.releaseDate between :from and :to order by m.releaseDate asc",
                 Movie.class)
             .setParameter("from", fromDate)
             .setParameter("to", toDate)

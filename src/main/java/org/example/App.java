@@ -1,9 +1,7 @@
 package org.example;
 
 import jakarta.persistence.EntityManager;
-import org.example.jpaimpl.MovieRepoJpa;
-import org.example.jpaimpl.UserRatingRepoJpa;
-import org.example.jpaimpl.UserRepoJpa;
+import org.example.jpaimpl.*;
 import org.example.pojo.*;
 import org.example.seed.*;
 
@@ -23,7 +21,7 @@ public class App {
                 DatabaseFiller filler = new DatabaseFiller(em);
                 filler.seedAll();
             } else {
-                System.out.println("Database already contains Movies. If other data is missing disable function and run filler.seedAll()");
+                System.out.println("Database already contains movies. If other data is missing disable function and run filler.seedAll()");
             }
         });
 
@@ -32,12 +30,16 @@ public class App {
             UserRepoJpa userRepoJpa = new UserRepoJpa(em);
             UserRatingRepoJpa userRatingRepoJpa = new UserRatingRepoJpa(em);
             MovieRepoJpa movieRepoJpa = new MovieRepoJpa(em);
+            ActorRepoJpa actorRepoJpa = new ActorRepoJpa(em);
+            GenreRepoJpa genreRepoJpa = new GenreRepoJpa(em);
+            DirectorRepoJpa directorRepoJpa = new DirectorRepoJpa(em);
 
             Optional<User> optionalUser = Optional.empty();
 
+            System.out.println("**** Welcome to IMDB CLI Application ****");
+
             // 🔁 Retry loop only for login
             while (optionalUser.isEmpty()) {
-                System.out.println("**** Welcome to IMDB CLI Application ****");
                 System.out.print("Please enter your username: ");
                 String userName = sc.nextLine();
                 System.out.print("Please enter your password: ");
@@ -63,7 +65,14 @@ public class App {
             if (user.getUserName().equals("Admin")) {
                 new CliAdminApp(em).printOptions();
             } else {
-                new CliApp().runUserMenu(sc, userRepoJpa, userRatingRepoJpa, movieRepoJpa, user);
+                new CliApp(em).runUserMenu(sc,
+                    userRepoJpa,
+                    userRatingRepoJpa,
+                    movieRepoJpa,
+                    actorRepoJpa,
+                    genreRepoJpa,
+                    directorRepoJpa,
+                    user);
             }
         }
     }

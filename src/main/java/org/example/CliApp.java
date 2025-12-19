@@ -1,10 +1,10 @@
 package org.example;
 
+import jakarta.persistence.EntityManager;
 import org.example.enums.Language;
-import org.example.jpaimpl.MovieRepoJpa;
-import org.example.jpaimpl.UserRatingRepoJpa;
-import org.example.jpaimpl.UserRepoJpa;
+import org.example.jpaimpl.*;
 
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -14,48 +14,61 @@ import org.example.pojo.Movie;
 import org.example.pojo.User;
 import org.example.pojo.Director;
 import org.example.pojo.Genre;
+import org.example.repo.DirectorRepo;
 
 public class CliApp {
+
+
+        private final EntityManager em;
+
+        public CliApp(EntityManager em) {
+            this.em = em;
+        }
+
+
+
+
 
     public void runUserMenu(Scanner sc,
                                     UserRepoJpa userRepoJpa,
                                     UserRatingRepoJpa userRatingRepoJpa,
                                     MovieRepoJpa movieRepoJpa,
+                                    ActorRepoJpa actorRepoJpa,
+                                    GenreRepoJpa genreRepoJpa,
+                                    DirectorRepoJpa directorRepoJpa,
                                     User user) {
-        String choice;
+        boolean keepRunning = true;
         do {
             showMenuOptions();
-            choice = sc.nextLine();
+            String choice = sc.nextLine();
 
             try {
                 int number = Integer.parseInt(choice);
-
                 switch (number) {
-                    case 1 -> optionsUser(userRepoJpa, movieRepoJpa, user);
+                    case 1 -> optionsUser(sc, userRepoJpa, movieRepoJpa, user);
                     case 2 -> optionsUserRating(movieRepoJpa, userRatingRepoJpa, user);
-                    case 3 -> optionsMovies(movieRepoJpa, user);
-                    default -> {
-                        System.out.println("Exiting the menu...");
-                        return;
-                    }
+                    case 3 -> optionsMovies(sc, actorRepoJpa, directorRepoJpa, genreRepoJpa, movieRepoJpa, userRepoJpa, user);
+                    default -> keepRunning = false;
                 }
-
-                System.out.println("*******************************");
-                System.out.println("Do you want to continue? (Y/N)");
-                choice = sc.nextLine().toUpperCase();
-
             } catch (NumberFormatException e) {
                 System.out.println("Please enter a numeric value");
             }
-        } while (choice.equals("Y"));
+
+            if (keepRunning) {
+                System.out.println("*******************************");
+                System.out.println("Do you want to continue? (Y/N)");
+                keepRunning = sc.nextLine().equalsIgnoreCase("Y");
+            }
+        } while (keepRunning);
+
     }
 
-    public void optionsUser(UserRepoJpa userRepoJpa,
+    public void optionsUser(Scanner sc,
+                            UserRepoJpa userRepoJpa,
                             MovieRepoJpa movieRepoJpa,
                             User user) {
 
         printOptionsUser();
-        Scanner sc = new Scanner(System.in);
         boolean running = true;
         while (running) {
 
@@ -64,8 +77,7 @@ public class CliApp {
 
         switch(choice) {
             case 1 -> {
-                System.out.println("Enter User ID: ");
-                long userID = sc.nextLong();
+                long userID = user.getId();
 
                 List<Movie> favorites = userRepoJpa.getFavoriteMovies(userID);
 
@@ -112,215 +124,250 @@ public class CliApp {
             }
 
             case 4 -> {
-                System.out.println("Enter Username: ");
+                System.out.print("What user do you want to find? Enter username: ");
                 String userName = sc.nextLine();
 
                 Optional<User> userOpt = userRepoJpa.findByUserName(userName);
 
                 if (userOpt.isPresent()) {
+                    User foundUser = userOpt.get();
                     System.out.println("User found: ");
-                    System.out.println("ID: " + user.getId());
-                    System.out.println("Username: " + user.getUserName());
+                    System.out.println("ID: " + foundUser.getId());
+                    System.out.println("Username: " + foundUser.getUserName());
                 } else {
                     System.out.println("No user found with that username: " + userName);
                 }
             }
-
-            case 0 -> {
-                System.out.println("Exiting program...");
-                running = false;
-            }
-
-            case 8 -> {
+            case 5 -> {
                 printOptionsUser();
+            }
+            case 0 -> {
+                System.out.println("Returning to main menu...");
+                running = false;
             }
 
             }
         }
     }
 
-    public void optionsMovies(MovieRepoJpa movieRepoJpa,
+    public void optionsMovies(Scanner sc,
+                              ActorRepoJpa actorRepoJpa,
+                              DirectorRepoJpa dictorRepoJpa,
+                              GenreRepoJpa genreRepoJpa,
+                              MovieRepoJpa movieRepoJpa,
+                              UserRepoJpa userRepoJpa,
                               User user) {
         printOptionsMovie();
-        Scanner sc = new Scanner(System.in);
         boolean running = true;
         while (running) {
 
-            int choice = sc.nextInt();
-            sc.nextLine();
+            String choice = sc.nextLine();
+            try {
 
-            switch (choice) {
-                // ====== LIST ALL MOVIES ======
-                case 1 -> {
-                    System.out.println("***** You have selected to list all movies *****");
-                    List<Movie> allMovies = movieRepoJpa.getAllMovies();
-                    allMovies.forEach(m-> System.out.println("- " + m.getTitle()));
-                }
+                int number = Integer.parseInt(choice);
 
-                // ====== LIST MOVIES BY LANGUAGE ======
-                case 2 -> {
-                    System.out.println("***** You have selected to list movies by language *****");
-                    System.out.println("Enter Language: ");
-                    String langInput = sc.nextLine().trim().toUpperCase();
-                    Language lang = Language.valueOf(langInput);
-                    movieRepoJpa.getMovieByLanguage(lang)
-                        .forEach(m-> System.out.println("- " + m.getTitle()));
-                }
-
-                // ====== LIST MOVIES BY RANKING ======
-                case 3 -> {
-                    System.out.println("***** You have selected to list movies by ranking *****");
-                    System.out.println("Enter minimum Ranking: ");
-                    int minRank = sc.nextInt();
-                    System.out.println("Enter maximum Ranking: ");
-                    int maxRank = sc.nextInt();
-                    sc.nextLine();
-
-                    movieRepoJpa.getMovieByRanking(minRank, maxRank)
-                        .forEach(m-> System.out.println(m.getTitle()
-                        + " rank: " + m.getRanking()));
-                }
-
-                // ====== LIST MOVIES BY LENGTH ======
-                case 4 -> {
-                    System.out.println("***** You have selected to list movies by length *****");
-                    System.out.println("Enter minimum Length in minutes: ");
-                    int minLen = sc.nextInt();
-                    System.out.println("Enter maximum length in minutes: ");
-                    int maxLen = sc.nextInt();
-                    sc.nextLine();
-
-                    movieRepoJpa.getMovieByLength(minLen, maxLen)
-                        .forEach(m-> System.out.println(m.getTitle()
-                        + " length: " + m.getLength() + " min"));
-                }
-
-                // ====== LIST MOVIES BY DATE ======
-                case 5 -> {
-                    System.out.println("***** You have selected to list movies by date *****");
-                    System.out.println("Enter release Date from: ");
-                    String from = sc.nextLine();
-                    System.out.println("Enter release Date to: ");
-                    String to = sc.nextLine();
-
-                    movieRepoJpa.getMovieByReleaseDate(from, to)
-                        .forEach(m-> System.out.println(m.getTitle()
-                        + " date: " + m.getReleaseDate()));
-                }
-
-                // ====== LIST MOVIES BY ACTOR ======
-                case 6 -> {
-                    System.out.println("***** You have selected find movies by actor *****");
-                    System.out.println("Enter Actor name: ");
-                    String actorName = sc.nextLine();
-
-                    Actor actor = new Actor();
-                    actor.setActorName(actorName);
-                    List<Movie> moviesByActor = movieRepoJpa.getByActor(actor);
-
-                    if (moviesByActor.isEmpty()) {
-                        System.out.println("No movies found for actor." + actor.getActorName());
-                    } else {
-                        moviesByActor.forEach(m-> System.out.println("- " + m.getTitle()));
+                switch (number) {
+                    // ====== LIST ALL MOVIES ======
+                    case 1 -> {
+                        System.out.println("***** You have selected to list all movies *****");
+                        List<Movie> allMovies = movieRepoJpa.getAllMovies();
+                        allMovies.forEach(m-> System.out.println("- " + m.getTitle()));
                     }
-                }
 
-                // ====== LIST MOVIES BY DIRECTOR ======
-                case 7 -> {
-                    System.out.println("***** You have selected find a movie by a director *****");
-                    System.out.println("Enter Director name: ");
-                    String directorName = sc.nextLine();
-
-                    Director director = new Director();
-                    director.setDirectorName(directorName);
-                    List<Movie> moviesByDirector = movieRepoJpa.getByDirector(director);
-
-                    if (moviesByDirector.isEmpty()) {
-                        System.out.println("No movies found for director." + director.getDirectorName());
-                    } else {
-                        moviesByDirector.forEach(m-> System.out.println("- " + m.getTitle()));
+                    // ====== LIST MOVIES BY LANGUAGE ======
+                    case 2 -> {
+                        System.out.println("***** You have selected to list movies by language *****");
+                        System.out.println("Enter Language: ");
+                        String langInput = sc.nextLine().trim().toUpperCase();
+                        Language lang = Language.valueOf(langInput);
+                        movieRepoJpa.getMovieByLanguage(lang)
+                            .forEach(m-> System.out.println("- " + m.getTitle()));
                     }
-                }
 
-                // ====== FIND MOVIES BY GENRE ======
-                case 8 -> {
-                    System.out.println("***** You have selected find a movie by genre *****");
-                    System.out.println("Enter Genre: ");
-                    String genreName = sc.nextLine();
+                    // ====== LIST MOVIES BY RANKING ======
+                    case 3 -> {
+                        System.out.println("***** You have selected to list movies by ranking *****");
+                        System.out.println("Enter minimum Ranking: ");
+                        String minRank = sc.nextLine();
+                        System.out.println("Enter maximum Ranking: ");
+                        String maxRank = sc.nextLine();
 
-                    Genre genre = new Genre();
-                    genre.setName(genreName);
+                        try {
+                            int minRankInt = Integer.parseInt(minRank);
+                            int maxRankInt = Integer.parseInt(maxRank);
 
-                    List<Movie> moviesByGenre = movieRepoJpa.getMovieByGenre(genreName);
+                            movieRepoJpa.getMovieByRanking(minRankInt, maxRankInt)
+                                .forEach(m-> System.out.println(m.getTitle()
+                                    + " rank: " + m.getRanking()));
 
-                    if (moviesByGenre.isEmpty()) {
-                        System.out.println("No movies found in genre: " + genre.getName());
-                    } else {
-                        moviesByGenre.forEach(m-> System.out.println("- " + m.getTitle()));
+                        } catch (NumberFormatException e) {
+                            System.out.println("Please enter a numeric value");
+                        }
                     }
-                }
 
-                // ====== FIND MOVIES BY TITLE ======
-                case 9 -> {
-                    System.out.println("***** You have selected find a movie by title *****");
-                    System.out.println("Enter movie title: ");
-                    String title = sc.nextLine();
+                    // ====== LIST MOVIES BY LENGTH ======
+                    case 4 -> {
+                        System.out.println("***** You have selected to list movies by length *****");
+                        System.out.println("Enter minimum Length in minutes: ");
+                        int minLen = sc.nextInt();
+                        System.out.println("Enter maximum length in minutes: ");
+                        int maxLen = sc.nextInt();
+                        sc.nextLine();
 
-                    Movie movie = new Movie();
-                    movie.setTitle(title);
+                        movieRepoJpa.getMovieByLength(minLen, maxLen)
+                            .forEach(m-> System.out.println(m.getTitle()
+                                + " length: " + m.getLength() + " min"));
+                    }
 
-                    Optional<Movie> movieOpt = movieRepoJpa.findByTitle(movie.getTitle());
+                    // ====== LIST MOVIES BY DATE ======
+                    case 5 -> {
+                        System.out.println("***** You have selected to list movies by date *****");
+                        System.out.println("Enter release Date from: ");
+                        String from = sc.nextLine();
+                        System.out.println("Enter release Date to: ");
+                        String to = sc.nextLine();
 
-                    if (movieOpt.isPresent()) {
-                        Movie found = movieOpt.get();
-                        System.out.println("===== MOVIE FOUND =====");
+                        movieRepoJpa.getMovieByReleaseDate(from, to)
+                            .forEach(m -> System.out.println(m.getTitle()
+                                + " date: " + m.getReleaseDate()));
+                    }
 
-                        // --TITLE
-                        System.out.println("Title: " + found.getTitle());
+                    // ====== LIST MOVIES BY ACTOR ======
+                    case 6 -> {
+                        System.out.println("***** You have selected find movies by actor *****");
+                        System.out.println("Enter Actor name: ");
+                        String actorName = sc.nextLine();
 
-                        // -- RELEASE DATE
-                        System.out.println("Release date: " + movie.getReleaseDate());
+                        //hämtar actor-objektet
+                        ActorRepoJpa actorRepo = new ActorRepoJpa(em);
+                        Optional<Actor> actorOpt = actorRepo.findByName(actorName);
 
-                        // -- DIRECTOR
-                        if (movie.getDirector() != null) {
-                            System.out.println("Director: " + movie.getDirector().getDirectorName());
-                        } else {
-                            System.out.println("No directors found");
+                        if (actorOpt.isEmpty()) {
+                            System.out.println("No movies actor found with name: " + actorName);
                         }
 
-                        // -- ACTOR
-                        if (movie.getActors() != null && !movie.getActors().isEmpty()) {
-                            System.out.println("Actors: ");
-                            movie.getActors().forEach(a -> System.out.println(a.getActorName() + ", "));
-                            System.out.println();
+                        Actor actor = actorOpt.get();
+                        List<Movie> moviesByActor = movieRepoJpa.getByActor(actor);
+
+                        if (moviesByActor.isEmpty()) {
+                            System.out.println("No movies found for actor: " + actor.getActorName());
                         } else {
-                            System.out.println("No actors found");
+                            moviesByActor.forEach(m-> System.out.println("- " + m.getTitle()));
+                        }
+                    }
+
+                    // ====== LIST MOVIES BY DIRECTOR ======
+                    case 7 -> {
+                        System.out.println("***** You have selected find a movie by a director *****");
+                        System.out.println("Enter Director name: ");
+
+                        String directorName = sc.nextLine();
+
+                        DirectorRepoJpa directorRepo = new DirectorRepoJpa(em);
+                        Optional<Director> directorOpt = directorRepo.findByName(directorName);
+
+                        if (directorOpt.isEmpty()) {
+                            System.out.println("No director found with name: " + directorName);
+                            break;
+                        }
+
+                        Director director = directorOpt.get();
+                        List<Movie> moviesByDirector = movieRepoJpa.getByDirector(director);
+
+                        if (moviesByDirector.isEmpty()) {
+                            System.out.println("No movies found for director: " + director.getDirectorName());
+                        } else {
+                            moviesByDirector.forEach(m -> System.out.println("- " + m.getTitle()));
+                        }
+                    }
+
+
+                    // ====== FIND MOVIES BY GENRE ======
+                    case 8 -> {
+                        System.out.println("***** You have selected find a movie by genre *****");
+                        System.out.println("Enter Genre: ");
+                        String genreName = sc.nextLine();
+
+                        GenreRepoJpa directorRepo = new GenreRepoJpa(em);
+                        Optional<Genre> genreOpt = directorRepo.findByName(genreName);
+
+                        if (genreOpt.isEmpty()) {
+                            System.out.println("No genre found with name: " + genreName);
+                        }
+
+                        Genre genre = genreOpt.get();
+                        List<Movie> moviesByGenre = movieRepoJpa.getMovieByGenre(genre.getName());
+
+                        if (moviesByGenre.isEmpty()){
+                            System.out.println("No movies found in genre: " + genre.getName());
+                        } else {
+                            moviesByGenre.forEach(m-> System.out.println("- " + m.getTitle()));
+                        }
+                    }
+
+                    // ====== FIND MOVIES BY TITLE ======
+                    case 9 -> {
+                        System.out.println("***** You have selected find a movie by title *****");
+                        System.out.println("Enter movie title: ");
+                        String title = sc.nextLine();
+
+                        Optional<Movie> movieOpt = movieRepoJpa.findByTitle(title);
+
+                        if (movieOpt.isPresent()) {
+                            Movie found = movieOpt.get();
+                            System.out.println("===== MOVIE FOUND =====");
+
+                            // -- TITLE
+                            System.out.println("Title: " + found.getTitle());
+
+                            // -- RELEASE DATE
+                            System.out.println("Release date: " + found.getReleaseDate());
+
+                            // -- DIRECTOR
+                            if (found.getDirector() != null) {
+                                System.out.println("Director: " + found.getDirector().getDirectorName());
+                            } else {
+                                System.out.println("No directors found");
+                            }
+
+                            // -- ACTORS
+                            if (found.getActors() != null && !found.getActors().isEmpty()) {
+                                System.out.println("Actors: ");
+                                found.getActors().forEach(a -> System.out.println(a.getActorName()));
+                            } else {
+                                System.out.println("No actors found");
+                            }
 
                             // -- GENRES
-                            if (movie.getGenres() != null && !movie.getGenres().isEmpty()) {
-                                System.out.println("Genre: ");
-                                movie.getGenres().forEach(g -> System.out.println(g.getName() + ", "));
-                                System.out.println();
+                            if (found.getGenres() != null && !found.getGenres().isEmpty()) {
+                                System.out.println("Genres: ");
+                                found.getGenres().forEach(g -> System.out.println(g.getName()));
                             } else {
                                 System.out.println("No genres found");
                             }
+
                             System.out.println("========================\n");
-                        }
                         } else {
-                            System.out.println("Movie not found: " + movie.getTitle());
+                            System.out.println("Movie not found: " + title);
                         }
                     }
 
-                case 0 -> {
-                    System.out.println("Exiting program...");
-                running = false;
+                    case 0 -> {
+                        System.out.println("Exiting program...");
+                        running = false;
+                    }
+
+                    case 10 -> {
+                        printOptionsMovie();
+                    }
+
                 }
 
-                case 10 -> {
-                    printOptionsMovie();
-                }
-
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a numeric value");
             }
+
+
         }
     }
 

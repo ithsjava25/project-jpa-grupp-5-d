@@ -87,6 +87,8 @@ public class CliAdminApp {
                     System.out.println("Enter the length of the movie in minutes:");
                     int length = scan.nextInt();
 
+                    scan.nextLine();
+
                     System.out.println("Enter the country the movie is from:");
                     Country country = Country.valueOf(scan.nextLine().trim().toUpperCase());
 

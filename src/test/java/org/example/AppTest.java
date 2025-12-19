@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -217,28 +218,37 @@ class AppTest {
     @Test
     void testUserMenuFlow() {
         String input = "1\n13\n2\n7\nTestfilm\n0\n";
-        // 1: hämta favoriter, 2: lägg till favorit, 0: exit
         System.setIn(new ByteArrayInputStream(input.getBytes()));
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         System.setOut(new PrintStream(out));
 
+        EntityManager emMock = Mockito.mock(EntityManager.class);
+
         UserRepoJpa userRepoMock = Mockito.mock(UserRepoJpa.class);
         MovieRepoJpa movieRepoMock = Mockito.mock(MovieRepoJpa.class);
+        Scanner scMock = Mockito.mock(Scanner.class);
 
         Movie testMovie = new Movie();
         testMovie.setTitle("Testfilm");
+
         Mockito.when(movieRepoMock.findByTitle("Testfilm"))
             .thenReturn(Optional.of(testMovie));
+
         Mockito.when(userRepoMock.getFavoriteMovies(123L))
             .thenReturn(List.of(testMovie));
 
-        CliApp app = new CliApp();
-        app.optionsUser(userRepoMock, movieRepoMock, null);
+        User testUser = new User();
+        testUser.setId(123L);
+        testUser.setUserName("TestUser");
+
+        CliApp app = new CliApp(emMock);
+        app.optionsUser(scMock, userRepoMock, movieRepoMock, testUser);
 
         String consoleOutput = out.toString();
         assertTrue(consoleOutput.contains("Favorite movies:"));
         assertTrue(consoleOutput.contains("Movie added to favorites"));
     }
+
 
 }
