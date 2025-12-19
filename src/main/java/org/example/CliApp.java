@@ -1,6 +1,7 @@
 package org.example;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import org.example.enums.Language;
 import org.example.jpaimpl.*;
 
@@ -22,9 +23,6 @@ public class CliApp {
     public CliApp(EntityManager em) {
         this.em = em;
     }
-
-
-
 
 
     public void runUserMenu(Scanner sc,
@@ -55,6 +53,7 @@ public class CliApp {
                 System.out.println("Please enter a numeric value");
             }
 
+
             if (keepRunning) {
                 System.out.println("*******************************");
                 System.out.println("Do you want to continue? (Y/N)");
@@ -71,14 +70,24 @@ public class CliApp {
 
         printOptionsUser();
         boolean running = true;
+
         while (running) {
 
-        int choice = sc.nextInt();
-        sc.nextLine();
+            String input = sc.nextLine();   // ✅ alltid nextLine()
+            int choice;
 
-        switch(choice) {
-            case 1 -> {
-                long userID = user.getId();
+            try {
+                choice = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a numeric value");
+                printOptionsUser();
+                continue;
+            }
+
+            switch (choice) {
+                // Get favorite movies
+                case 1 -> {
+                    long userID = user.getId();
 
                     List<Movie> favorites = userRepoJpa.getFavoriteMovies(userID);
 
@@ -90,12 +99,12 @@ public class CliApp {
                             System.out.println("- " + movie.getTitle()));
                     }
 
-            }
-            case 2 -> {
-                System.out.println("Enter User ID: ");
-                long userID = sc.nextLong();
-                System.out.println("Enter movie title: ");
-                String title = sc.nextLine();
+                }
+                // Add favorite movies
+                case 2 -> {
+                    long userID = user.getId();
+                    System.out.println("Enter movie title: ");
+                    String title = sc.nextLine();
 
                     Optional<Movie> movieOpt = movieRepoJpa.findByTitle(title);
 
@@ -129,22 +138,30 @@ public class CliApp {
 
                     Optional<User> userOpt = userRepoJpa.findByUserName(userName);
 
-                if (userOpt.isPresent()) {
-                    User foundUser = userOpt.get();
-                    System.out.println("User found: ");
-                    System.out.println("ID: " + foundUser.getId());
-                    System.out.println("Username: " + foundUser.getUserName());
-                } else {
-                    System.out.println("No user found with that username: " + userName);
+                    if (userOpt.isPresent()) {
+                        User foundUser = userOpt.get();
+                        System.out.println("User found: ");
+                        System.out.println("ID: " + foundUser.getId());
+                        System.out.println("Username: " + foundUser.getUserName());
+                    } else {
+                        System.out.println("No user found with that username: " + userName);
+                    }
                 }
+                // Show options again
+                case 5 -> {
+                    printOptionsUser();
+                }
+                case 0 -> {
+                    System.out.println("Returning to main menu...");
+                    running = false;
+                }
+                default -> System.out.println("Invalid option");
             }
-            case 5 -> {
+
+            // ✅ Visa menyn igen om vi fortfarande är i loopen
+            if (running) {
+                System.out.println();
                 printOptionsUser();
-            }
-            case 0 -> {
-                System.out.println("Returning to main menu...");
-                running = false;
-            }
 
             }
         }
@@ -161,8 +178,16 @@ public class CliApp {
         boolean running = true;
         while (running) {
 
-            String choice = sc.nextLine();
+            String input = sc.nextLine();
+            int choice;
+
             try {
+                choice = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a numeric value");
+                printOptionsMovie();
+                continue;
+            }
 
             switch (choice) {
                 // ====== LIST ALL MOVIES ======
@@ -375,12 +400,9 @@ public class CliApp {
 
             }
 
-            } catch (NumberFormatException e) {
-                System.out.println("Please enter a numeric value");
-            }
-
-
         }
+
+
     }
 
     public void optionsUserRating(Scanner sc,

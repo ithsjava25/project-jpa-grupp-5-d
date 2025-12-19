@@ -19,28 +19,22 @@ public class CliAdminApp {
         System.out.println("**** Welcome to the Admin Menu ****");
 
         while (running) {
-            System.out.println("""
-                    =============ADMIN MENU=============
-                    1. Add new user (userName, password)
-                    2. Delete user (userId)
-                    3. Add a new movie (title, date YYYY-MM-DD, length in minutes, country, language)
-                    4. Delete movie (id)
-                    5. Add an actor to a movie (movieId, actorId) OR (movie, actor)
-                    6. Add a director to a movie (movieId, directorId)
-                    7. Add a new Genre (genreName) ***** ta bort? enum?
-                    8. Delete a genre (genreId)
-                    9. Add a new actor (actorname, country)
-                    10. Delete an actor (id)
-                    11. Add a new Director (directorName, country)
-                    12. Delete a director (id)
-                    13. Find users by username (userName)
-                    0. Exit
-                """);
 
-            int choice = scan.nextInt();
-            scan.nextLine();
+            printOptions();
+
+            String input = sc.nextLine();
+            int choice;
+
+            try {
+                choice = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a numeric value");
+                continue;
+            }
 
             switch (choice) {
+
+                // ADD A NEW USER
                 case 1 -> {
                     System.out.println("Enter a Username:");
                     String userName = sc.nextLine().trim();
@@ -60,8 +54,8 @@ public class CliAdminApp {
                 }
                 // DELETE A USER
                 case 2 -> {
-                    System.out.println("Enter userId to delete:");
-                    long userId = scan.nextLong();
+                    System.out.print("Enter user (username) to delete: ");
+                    String userName = sc.nextLine();
 
                     JpaRunner.runInTransaction(em -> {
                         UserRepoJpa userRepo = new UserRepoJpa(em);
@@ -75,8 +69,8 @@ public class CliAdminApp {
                         }
                     });
                 }
+                // ADD A NEW MOVIE
                 case 3 -> {
-                    //Add a new movie (title, date YYYY-MM-DD, length in minutes, country, language)
                     System.out.println("Enter the title of the movie:");
                     String movie = sc.nextLine();
 
@@ -133,28 +127,45 @@ public class CliAdminApp {
                         System.out.println("Movie added!");
                     });
                 }
+                // DELETE A MOVIE
                 case 4 -> {
-                    System.out.println("Enter movieId to delete:");
-                    long movieId = scan.nextLong();
-                    MovieRepoJpa movieRepo = new MovieRepoJpa(em);
-                    em.getTransaction().begin();
-                    movieRepo.deleteMovie(movieId);
-                    em.getTransaction().commit();
-                    System.out.println("Movie successfully deleted!");
+                    System.out.print("Enter the title of a movie that you would like to delete: ");
+                    String movieTitle = sc.nextLine();
+
+                    JpaRunner.runInTransaction(em -> {
+                        MovieRepoJpa movieRepo = new MovieRepoJpa(em);
+                        var movieOpt = movieRepo.findByTitle(movieTitle);
+
+                        if (movieOpt.isEmpty()) {
+                            System.out.println("No movie found with the title: " + movieTitle);
+                        } else {
+                            long movieId = movieOpt.get().getId();
+                            movieRepo.deleteMovie(movieId);
+                            System.out.println("Movie: '" + movieTitle + "' was successfully deleted");
+                        }
+                    });
+
                 }
+                // ADD AN ACTOR TO A MOVIE
                 case 5 -> {
                     System.out.println("Enter movie title:");
-                    String movieTitle = scan.nextLine();
+                    String movieTitle = sc.nextLine();
+
                     System.out.println("Enter actor name:");
-                    String actorName = scan.nextLine();
-                    MovieRepoJpa movieRepo = new MovieRepoJpa(em);
-                    ActorRepoJpa actorRepo = new ActorRepoJpa(em);
-                    em.getTransaction().begin();
-                    Actor actor = actorRepo.findByName(actorName)
-                        .orElseThrow(() -> new RuntimeException("Actor not found: " + actorName));
-                    movieRepo.addActors(movieTitle, List.of(actor));
-                    em.getTransaction().commit();
-                    System.out.println("Actor " + actorName + " added to movie " + movieTitle + "!");
+                    String actorName = sc.nextLine();
+
+                    JpaRunner.runInTransaction(em -> {
+                        MovieRepoJpa movieRepo = new MovieRepoJpa(em);
+                        ActorRepoJpa actorRepo = new ActorRepoJpa(em);
+
+                        var actorOpt = actorRepo.findByName(actorName);
+                        if (actorOpt.isEmpty()) {
+                            System.out.println("No actor found with name: " + actorName);
+                            return;
+                        }
+                        movieRepo.addActors(movieTitle, List.of(actorOpt.get()));
+                        System.out.println("Actor added to movie!");
+                    });
                 }
                 // ADD A DIRECTOR TO A MOVIE
                 case 6 -> {
@@ -217,16 +228,26 @@ public class CliAdminApp {
                 // ADD A NEW ACTOR
                 case 9 -> {
                     System.out.println("Enter actor name:");
-                    String actorName = scan.nextLine();
-                    System.out.println("Enter country:");
-                    Country country = Country.valueOf(scan.nextLine().toUpperCase());
-                    ActorRepoJpa actorRepo = new ActorRepoJpa(em);
-                    em.getTransaction().begin();
-                    actorRepo.addActor(actorName, country);
-                    em.getTransaction().commit();
+                    String actorName = sc.nextLine().trim();
 
-                    System.out.println("Actor '" + actorName + "' added successfully!");
+                    System.out.println("Enter country:");
+                    String countryInput = sc.nextLine().trim().toUpperCase();
+
+                    Country country;
+                    try {
+                        country = Country.valueOf(countryInput);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid country. Please enter one of: " + Arrays.toString(Country.values()));
+                        break; // stop this case early
+                    }
+
+                    JpaRunner.runInTransaction(em -> {
+                        ActorRepoJpa actorRepo = new ActorRepoJpa(em);
+                        actorRepo.addActor(actorName, country);
+                        System.out.println("Actor '" + actorName + "' from " + country + " added!");
+                    });
                 }
+                // DELETE AN ACTOR
                 case 10 -> {
                     System.out.print("Enter actor name to delete: ");
                     String actorName = sc.nextLine().trim();
@@ -249,21 +270,27 @@ public class CliAdminApp {
                 }
                 // ADD A NEW DIRECTOR
                 case 11 -> {
-                    //11. Add a new Director (directorName, country)
-                    System.out.println("Enter director name to add:");
-                    String director = scan.nextLine();
+                    System.out.println("Enter director name:");
+                    String directorName = sc.nextLine().trim();
 
-                    System.out.println("Enter the country the director is from:");
-                    Country country = Country.valueOf(scan.nextLine());
+                    System.out.println("Enter country:");
+                    String countryInput = sc.nextLine().trim().toUpperCase();
 
-                    DirectorRepoJpa directorRepo = new DirectorRepoJpa(em);
+                    Country country;
+                    try {
+                        country = Country.valueOf(countryInput);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid country. Please enter one of: " + Arrays.toString(Country.values()));
+                        break; // stop this case early
+                    }
 
-                    em.getTransaction().begin();
-                    directorRepo.addDirector(director, country);
-                    em.getTransaction().commit();
-
-                    System.out.println("Director added!");
+                    JpaRunner.runInTransaction(em -> {
+                        DirectorRepoJpa directorRepo = new DirectorRepoJpa(em);
+                        directorRepo.addDirector(directorName, country);
+                        System.out.println("Director '" + directorName + "' from " + country + " added!");
+                    });
                 }
+                // DELETE A DIRECTOR
                 case 12 -> {
                     System.out.print("Enter director name to delete: ");
                     String directorName = sc.nextLine().trim();
@@ -286,26 +313,57 @@ public class CliAdminApp {
                 }
                 // FIND USERS BY USERNAME
                 case 13 -> {
-                    System.out.println("Enter username to search:");
-                    String userName = scan.nextLine();
-                    UserRepoJpa userRepo = new UserRepoJpa(em);
-                    em.getTransaction().begin();
-                    var users = userRepo.findByUserName(userName);
-                    em.getTransaction().commit();
+                    System.out.print("Enter username: ");
+                    String userName = sc.nextLine().trim();
 
-                    if (users.isEmpty()) {
-                        System.out.println("No users found with username '" + userName + "'");
-                    } else {
-                        users.ifPresent(u -> System.out.println("Found user: " + u.getUserName()));
+                    if (userName.isEmpty()) {
+                        System.out.println("Username cannot be empty.");
+                        break; // stop this case early
                     }
-                }
-                case 0 -> {
-                    System.out.println("Exiting...");
-                    return;
-                }
 
+                    JpaRunner.runInTransaction(em -> {
+                        UserRepoJpa userRepo = new UserRepoJpa(em);
+                        var userOpt = userRepo.findByUserName(userName);
+
+                        if (userOpt.isEmpty()) {
+                            System.out.println("No user found with username: " + userName);
+                        } else {
+                            System.out.println("Found user: " + userOpt.get().getUserName());
+                        }
+                    });
+                }
+                // EXIT
+                case 0 -> {
+                    System.out.println("Exiting admin menu...");
+                    running = false;
+                }
+                default -> System.out.println("Invalid option");
+            }
+
+            // ✅ Always show menu again unless exiting
+            if (running) {
+                printOptions();
             }
         }
     }
 
+    public void printOptions(){
+        System.out.println("""
+                =============ADMIN MENU=============
+                1. Add new user (userName, password)
+                2. Delete user (userId)
+                3. Add a new movie (title, date YYYY-MM-DD, length in minutes, country, language)
+                4. Delete movie (id)
+                5. Add an actor to a movie (movieId, actorId) OR (movie, actor)
+                6. Add a director to a movie (movieId, directorId)
+                7. Add a new Genre (genreName)
+                8. Delete a genre (genreId)
+                9. Add a new actor (actorname, country)
+                10. Delete an actor (id)
+                11. Add a new Director (directorName, country)
+                12. Delete a director (id)
+                13. Find users by username (userName)
+                0. Exit
+                """);
+    }
 }
