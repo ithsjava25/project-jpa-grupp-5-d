@@ -1,3 +1,10 @@
+
+TODO:
+## Formatering av rating i dba
+## Application managed or container managed entity manager?
+## Check tests (all)
+
+
 IMDB - variant
 
 One - To - Many

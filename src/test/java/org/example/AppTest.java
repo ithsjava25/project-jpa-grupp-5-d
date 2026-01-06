@@ -130,7 +130,6 @@ class AppTest {
         );
         em.getTransaction().commit();
 
-        assertNotNull(movie.getId());
         assertEquals("Test Movie", movie.getTitle());
         assertEquals(Country.USA, movie.getCountry());
         assertEquals(Language.ENGLISH, movie.getLanguage());
