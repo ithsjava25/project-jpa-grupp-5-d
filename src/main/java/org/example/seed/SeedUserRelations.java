@@ -34,7 +34,7 @@ public class SeedUserRelations {
             Collections.shuffle(movieList);
             int ratingsCount = 1 + random.nextInt(5);
             for (int i = 0; i < ratingsCount; i++){
-                float rating = 1.0f + random.nextFloat() * 4.0f;
+                float rating = Math.round(1.0f + random.nextFloat() * 4.0f);
                 ratingRepo.rateMovie(user, movieList.get(i), rating);
             }
         }

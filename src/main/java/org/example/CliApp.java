@@ -5,15 +5,15 @@ import jakarta.persistence.EntityTransaction;
 import org.example.enums.Language;
 import org.example.jpaimpl.*;
 
+import java.sql.SQLOutput;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
-import org.example.pojo.Movie;
-import org.example.pojo.User;
-import org.example.pojo.Director;
-import org.example.pojo.Genre;
+import org.example.pojo.*;
 
 public class CliApp {
 
@@ -98,7 +98,8 @@ public class CliApp {
                         favorites.forEach(movie ->
                             System.out.println("- " + movie.getTitle()));
                     }
-
+                    System.out.println("Press enter to continue back to menu.");
+                    sc.nextLine();
                 }
                 // Add favorite movies
                 case 2 -> {
@@ -114,6 +115,8 @@ public class CliApp {
                     } else {
                         System.out.println("Movie not found");
                     }
+                    System.out.println("Press enter to continue back to menu.");
+                    sc.nextLine();
                 }
                 // Remove favorite movie
                 case 3 -> {
@@ -130,6 +133,8 @@ public class CliApp {
                     } else {
                         System.out.println("Movie not found");
                     }
+                    System.out.println("Press enter to continue back to menu.");
+                    sc.nextLine();
                 }
                 // Find users by username
                 case 4 -> {
@@ -146,6 +151,8 @@ public class CliApp {
                     } else {
                         System.out.println("No user found with that username: " + userName);
                     }
+                    System.out.println("Press enter to continue back to menu.");
+                    sc.nextLine();
                 }
                 // Show options again
                 case 5 -> {
@@ -195,35 +202,69 @@ public class CliApp {
                     System.out.println("***** You have selected to list all movies *****");
                     List<Movie> allMovies = movieRepoJpa.getAllMovies();
                     allMovies.forEach(m -> System.out.println("- " + m.getTitle()));
+
+                    System.out.println("Press enter to continue back to menu.");
+                    sc.nextLine();
                 }
                 // ====== LIST MOVIES BY LANGUAGE ======
                 case 2 -> {
                     System.out.println("***** You have selected to list movies by language *****");
-                    System.out.println("Enter Language: ");
+                    System.out.print("Enter Language: ");
                     String langInput = sc.nextLine().trim().toUpperCase();
-                    Language lang = Language.valueOf(langInput);
-                    movieRepoJpa.getMovieByLanguage(lang)
-                        .forEach(m -> System.out.println("- " + m.getTitle()));
+
+                    try {
+                        Language lang = Language.valueOf(langInput);
+
+                        List<Movie> movies = movieRepoJpa.getMovieByLanguage(lang);
+                        if (movies.isEmpty()) {
+                            System.out.println("No movies found for language: " + lang);
+                        } else {
+                            movies.forEach(m -> System.out.println("- " + m.getTitle()));
+                        }
+
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid language input.");
+                        System.out.println("Available languages: ");
+                        for (Language l : Language.values()) {
+                            System.out.println("- " + l);
+                        }
+                    }
+                    System.out.println("Press enter to continue back to menu.");
+                    sc.nextLine();
                 }
+
                 // ====== LIST MOVIES BY RANKING ======
                 case 3 -> {
                     System.out.println("***** You have selected to list movies by ranking *****");
-                    System.out.println("Enter minimum Ranking: ");
+                    System.out.println("The ranking system is from 1-5 toasts");
+                    System.out.println("Enter minimum Ranking (min 1) : ");
                     String minRank = sc.nextLine();
-                    System.out.println("Enter maximum Ranking: ");
+                    System.out.println("Enter maximum Ranking (max 5): ");
                     String maxRank = sc.nextLine();
 
                     try {
                         int minRankInt = Integer.parseInt(minRank);
+                        if (minRankInt < 1 || minRankInt > 5){
+                            System.out.println("Invalid minimum ranking. Please enter a value between 1 and 5");
+                        }
                         int maxRankInt = Integer.parseInt(maxRank);
+                        if (maxRankInt < 1 || maxRankInt > 5){
+                            System.out.println("Invalid maximum ranking. Please enter a value between 1 and 5");
+                        }
+
+                        if (minRankInt > maxRankInt) {
+                            System.out.println("Minimum ranking cannot be higher than maxmimum ranking");
+                        }
 
                         movieRepoJpa.getMovieByRanking(minRankInt, maxRankInt)
                             .forEach(m -> System.out.println(m.getTitle()
                                 + " rank: " + m.getRanking()));
 
                     } catch (NumberFormatException e) {
-                        System.out.println("Please enter a numeric value");
+                        System.out.println("Invalid Input. Please enter numeric values only");
                     }
+                    System.out.println("Press enter to continue back to menu.");
+                    sc.nextLine();
                 }
                 // ====== LIST MOVIES BY LENGTH ======
                 case 4 -> {
@@ -244,37 +285,41 @@ public class CliApp {
                     } catch (NumberFormatException e) {
                         System.out.println("Please enter a numeric value");
                     }
+                    System.out.println("Press enter to continue back to menu.");
+                    sc.nextLine();
                 }
                 // ====== LIST MOVIES BY DATE ======
                 case 5 -> {
                     System.out.println("***** You have selected to list movies by date *****");
 
-                    String from = null;
-                    String to = null;
+                    LocalDate fromDate = null;
+                    LocalDate toDate = null;
 
-                    boolean valid = false;
+                    System.out.println("Enter release Date from (YYYY-MM-DD or YYYYMMDD): ");
+                    String from = sc.nextLine().trim();
+                    System.out.println("Enter release Date to (YYYY-MM-DD or YYYYMMDD): ");
+                    String to = sc.nextLine().trim();
 
-                    while (!valid) {
-                        try {
-                            System.out.println("Enter release Date from (YYYY-MM-DD): ");
-                            from = sc.nextLine();
-
-                            System.out.println("Enter release Date to (YYYY-MM-DD): ");
-                            to = sc.nextLine();
-
-                            // ✅ Testa att parsa direkt här
-                            LocalDate.parse(from);
-                            LocalDate.parse(to);
-
-                            valid = true; // ✅ allt ok
-
-                        } catch (Exception e) {
-                            System.out.println("Invalid date format. Please use YYYY-MM-DD.");
+                    try {
+                        if (from.matches("\\d{8}")) {
+                            from = from.substring(0, 4) + "-" + from.substring(4, 6) + "-" + from.substring(6, 8);
                         }
+                        if (to.matches("\\d{8}")) {
+                            to = to.substring(0, 4) + "-" + to.substring(4, 6) + "-" + to.substring(6, 8);
+                        }
+
+                        fromDate = LocalDate.parse(from);
+                        toDate = LocalDate.parse(to);
+                    } catch (DateTimeParseException e) {
+                        System.out.println("Invalid date format. " + e.getMessage() + ". Press Enter to continue.");
+                        continue;
                     }
 
-                    movieRepoJpa.getMovieByReleaseDate(from, to)
+                    movieRepoJpa.getMovieByReleaseDate(fromDate, toDate)
                         .forEach(m -> System.out.println(m.getTitle() + " date: " + m.getReleaseDate()));
+
+                    System.out.println("Press enter to continue back to menu.");
+                    sc.nextLine();
                 }
                 // ====== LIST MOVIES BY ACTOR ======
                 case 6 -> {
@@ -293,6 +338,8 @@ public class CliApp {
                         },
                         () -> System.out.println("No actor found with name: " + actorName)
                     );
+                    System.out.println("Press enter to continue back to menu.");
+                    sc.nextLine();
                 }
                 // ====== LIST MOVIES BY DIRECTOR ======
                 case 7 -> {
@@ -316,6 +363,8 @@ public class CliApp {
                     } else {
                         moviesByDirector.forEach(m -> System.out.println("- " + m.getTitle()));
                     }
+                    System.out.println("Press enter to continue back to menu.");
+                    sc.nextLine();
                 }
                 // ====== FIND MOVIES BY GENRE ======
                 case 8 -> {
@@ -326,7 +375,8 @@ public class CliApp {
                     Optional<Genre> genreOpt = genreRepoJpa.findByName(genreName);
 
                     if (genreOpt.isEmpty()) {
-                        System.out.println("No genre found with name: " + genreName);
+                        System.out.println("No genre found with name: " + genreName + ". Press Enter to continue.");
+                        continue;
                     }
 
                     Genre genre = genreOpt.get();
@@ -337,6 +387,8 @@ public class CliApp {
                     } else {
                         moviesByGenre.forEach(m -> System.out.println("- " + m.getTitle()));
                     }
+                    System.out.println("Press enter to continue back to menu.");
+                    sc.nextLine();
                 }
                 // ====== FIND MOVIES BY TITLE ======
                 case 9 -> {
@@ -365,8 +417,13 @@ public class CliApp {
 
                         // -- ACTORS
                         if (found.getActors() != null && !found.getActors().isEmpty()) {
-                            System.out.println("Actors: ");
-                            found.getActors().forEach(a -> System.out.println(a.getActorName()));
+                            System.out.print("Actors: ");
+
+                            String actorsFormatted = found.getActors().stream()
+                                    .map(Actor::getActorName).collect(Collectors.joining(", "));
+                            System.out.println("(" + actorsFormatted + ")");
+
+                            //found.getActors().forEach(a -> System.out.println(a.getActorName()));
                         } else {
                             System.out.println("No actors found");
                         }
@@ -374,7 +431,11 @@ public class CliApp {
                         // -- GENRES
                         if (found.getGenres() != null && !found.getGenres().isEmpty()) {
                             System.out.println("Genres: ");
-                            found.getGenres().forEach(g -> System.out.println(g.getName()));
+
+                            String genresFormatted = found.getGenres().stream()
+                                .map(Genre::getGenreName).collect(Collectors.joining(", "));
+                            System.out.println("(" + genresFormatted + ")");
+
                         } else {
                             System.out.println("No genres found");
                         }
@@ -383,10 +444,12 @@ public class CliApp {
                     } else {
                         System.out.println("Movie not found: " + title);
                     }
+                    System.out.println("Press enter to continue back to menu.");
+                    sc.nextLine();
                 }
                 // ====== Show Options again ======
                 case 10 -> {
-                    printOptionsMovie();
+                    continue;
                 }
                 case 0 -> {
                     System.out.println("Returning to main menu...");
@@ -432,7 +495,7 @@ public class CliApp {
                     String title = sc.nextLine();
                     Optional<Movie> movieOpt = movieRepoJpa.findByTitle(title);
                     if (movieOpt.isEmpty()) {
-                        System.out.println("Movie not found. Please try again.");
+                        System.out.println("Movie not found. Press enter to continue to menu.");
                         continue;
                     }
 
@@ -444,15 +507,12 @@ public class CliApp {
                         System.out.print("Enter rating (1-5): ");
                         String rateString = sc.nextLine();
 
-                        try {
-                            rating = Double.parseDouble(rateString);
-                            if (rating >= 1.0f && rating <= 5.0f) {
-                                validRating = true;
-                            } else {
-                                System.out.println("Rating must be between 1 and 5.");
-                            }
-                        } catch (NumberFormatException e) {
-                            System.out.println("Invalid input. You must enter a numeric value.");
+                        // Accept ONLY 1, 2, 3, 4, or 5
+                        if (rateString.matches("[1-5]")) {
+                            rating = Double.parseDouble(rateString);  // or float/int depending on your method
+                            validRating = true;
+                        } else {
+                            System.out.println("Invalid input. Please enter an integer between 1 and 5.");
                         }
                     }
 
@@ -470,6 +530,8 @@ public class CliApp {
                             if (tx.isActive()) tx.rollback();
                             System.out.println("Failed to rate movie: " + e.getMessage());
                         }
+                        System.out.println("Press enter to continue back to menu.");
+                        sc.nextLine();
                     });
 
 
@@ -485,9 +547,11 @@ public class CliApp {
                     } else {
                         System.out.println("Here are the movies you have rated: ");
                         for (Movie m : ratedMovies) {
-                            System.out.println("- " + m.getTitle());
+                            System.out.println("- " + m.getTitle() + " Rating: " + m.getRatings());
                         }
                     }
+                    System.out.println("Press enter to continue back to menu.");
+                    sc.nextLine();
                 }
                 // Get rating for a movie
                 case 3 -> {
@@ -497,7 +561,7 @@ public class CliApp {
 
                     Optional<Movie> movieOpt = movieRepoJpa.findByTitle(title);
                     if (movieOpt.isEmpty()) {
-                        System.out.println("Movie not found. Please try another title.");
+                        System.out.println("Movie not found. Press enter to continue to menu..");
                         continue;
                     }
                     movieOpt.ifPresent(movie -> {
@@ -507,6 +571,8 @@ public class CliApp {
                         } else {
                             System.out.println("You have not rated this movie yet.");
                         }
+                        System.out.println("Press enter to continue back to menu.");
+                        sc.nextLine();
                     });
                 }
                 // Print options again

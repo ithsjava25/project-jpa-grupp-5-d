@@ -20,7 +20,7 @@ public interface MovieRepo {
 
     List<Movie> getByDirector(Director director);
     List<Movie> getByActor(Actor actor);
-    List<Movie> getMovieByReleaseDate(String from, String to);
+    List<Movie> getMovieByReleaseDate(LocalDate from, LocalDate to);
     List<Movie> getMovieByLength(int minLen, int maxLen);
     List<Movie> getMovieByRanking(int minRank, int maxRank);
     List<Movie> getMovieByLanguage(Language language);

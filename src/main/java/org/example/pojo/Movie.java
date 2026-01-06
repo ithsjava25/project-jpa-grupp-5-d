@@ -55,7 +55,7 @@ public class Movie {
     public int getLength() { return length; }
     public void setLength(int length) { this.length = length; }
     public double getRanking() { return ranking; }
-    public void setRanking(double ranking) { this.ranking = ranking; }
+    public void setRanking(Double ranking) { this.ranking = ranking; }
     public Country getCountry() { return country; }
     public void setCountry(Country country) { this.country = country; }
     public Language getLanguage() { return language; }
