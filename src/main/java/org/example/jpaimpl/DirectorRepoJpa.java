@@ -2,6 +2,7 @@ package org.example.jpaimpl;
 
 import jakarta.persistence.EntityManager;
 import org.example.enums.Country;
+import org.example.pojo.Actor;
 import org.example.pojo.Director;
 import org.example.repo.DirectorRepo;
 
@@ -44,6 +45,20 @@ public class DirectorRepoJpa implements DirectorRepo {
                 return true;
         }
         return false;
+    }
+    public boolean deleteByName(String name) {
+        Director director = em.createQuery("SELECT d FROM Director d WHERE d.directorName = :name", Director.class)
+            .setParameter("name", name)
+            .getResultStream()
+            .findFirst()
+            .orElse(null);
+
+        if (director == null) {
+            return false; // ingen actor hittades
+        }
+
+        em.remove(director);
+        return true; // actor togs bort
     }
 
     @Override

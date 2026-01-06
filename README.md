@@ -20,7 +20,7 @@ Kommunikation med databasen ska ske med JPA och Hibernate, enligt code first-met
 - [X] Dela upp funktioner mellan gruppmedlemmar
 - [X] Implementera funktionalitet för huvudentiteter
 - [ ] Testa queries med EntityManager
-- [ ] Dokumentera större designbeslut i PR-beskrivningar
+- [X] Dokumentera större designbeslut i PR-beskrivningar
 - [ ] Säkerställ att alla merges sker via kodgranskning
 
 ### ✅ Vecka 3 – Finslipning och presentation
