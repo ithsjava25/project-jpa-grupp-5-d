@@ -4,6 +4,35 @@ TODO:
 ## Application managed or container managed entity manager?
 ## Check tests (all)
 
+## CLI app - Add note (Press enter to show menue again), on all options, hantering för retards??
+## Rate a movie - No response after, only message "Movie not found. Please try again"
+## Get movies that you rated - also get rating for the movie not only the title??
+## Rate a movie - Endast kunna skriva in heltal
+
+## Select movie by language - Throws error if not correct input
+## Select movie by language - Takes user input on new row -> print() not println()
+## Select movie by ranking - Add user note (ranking 1 -> 5, 0 does not exist)
+## Select movie by ranking - error message on invalid input??
+## Select movie by releaseDate - formatting on date does not work? Handle both YYYYMMDD and YYYY-MM-DD
+## Select movie by genre - Breaks down if incorrect input. Typecast error to runtime?
+## Find movie by title - Format the output. Actors is displayed on new rows. Use (Actor 1, Actor 2, etc...) instead. Same with genre
+## Menu option 3 -> Shows 2 menues when using option 10 (show menu again)
+
+## ADMIN MENU
+## Add new user - Prints menue 2 times after new user is added
+## delete user (userId) - searches for username, change menu option name
+## Add new movie - exit the program if invalid input
+## Add a new actor - if actor name already exist doublecheck with user if you really want to add the actor
+        ## Says new actor is added, but its not. Some doublecheck?
+## Add a new director - if actor name already exist doublecheck with user if you really want to add the actor
+        ## same as above?
+## Delete a movie by ID - actually wants title, change name of menu option
+## Add an actor to a movie (movie title and actor name) - inconsistent menu name
+## Delete a genre - Goes by ID while all other delete-methods search by name/title
+## Add new actor - Possible to add actor with name "123", only letters should be allowed
+## Delete an actor (id) - delets by name, change menu name
+## Add / Delete director - same as actor functions
+## Add a new genre - Add alrdy existing does not work, but it consume the auto-increment ID.
 
 IMDB - variant
 
