@@ -1,7 +1,7 @@
 package org.example.repo;
 
 import org.example.enums.Country;
-import org.example.pojo.Actor;
+import org.example.entity.Actor;
 
 import java.util.List;
 import java.util.Optional;

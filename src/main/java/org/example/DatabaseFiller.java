@@ -1,15 +1,10 @@
 package org.example;
 
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
-import org.example.enums.Country;
-import org.example.enums.Language;
 import org.example.jpaimpl.*;
-import org.example.pojo.*;
+import org.example.entity.*;
 import org.example.seed.*;
 
-import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.Map;
 
 public class DatabaseFiller {

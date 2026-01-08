@@ -4,7 +4,7 @@ import jakarta.persistence.EntityManager;
 import org.example.enums.Country;
 import org.example.enums.Language;
 import org.example.jpaimpl.MovieRepoJpa;
-import org.example.pojo.Movie;
+import org.example.entity.Movie;
 
 import java.time.LocalDate;
 import java.util.HashMap;

@@ -2,9 +2,9 @@ package org.example.seed;
 
 import jakarta.persistence.EntityManager;
 import org.example.jpaimpl.MovieRepoJpa;
-import org.example.pojo.Actor;
-import org.example.pojo.Director;
-import org.example.pojo.Genre;
+import org.example.entity.Actor;
+import org.example.entity.Director;
+import org.example.entity.Genre;
 
 import java.util.List;
 import java.util.Map;

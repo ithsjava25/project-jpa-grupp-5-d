@@ -1,7 +1,7 @@
 package org.example.jpaimpl;
 
 import jakarta.persistence.EntityManager;
-import org.example.pojo.Genre;
+import org.example.entity.Genre;
 import org.example.repo.GenreRepo;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package org.example.repo;
 
-import org.example.pojo.Movie;
-import org.example.pojo.User;
+import org.example.entity.Movie;
+import org.example.entity.User;
 
 import java.util.List;
 import java.util.Optional;

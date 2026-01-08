@@ -3,8 +3,8 @@ package org.example.jpaimpl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
-import org.example.pojo.Movie;
-import org.example.pojo.User;
+import org.example.entity.Movie;
+import org.example.entity.User;
 import org.example.repo.UserRepo;
 
 import java.util.List;

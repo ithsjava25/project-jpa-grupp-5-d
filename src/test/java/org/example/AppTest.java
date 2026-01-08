@@ -2,12 +2,11 @@ package org.example;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import org.example.enums.Country;
 import org.example.enums.Language;
 import org.example.jpaimpl.MovieRepoJpa;
 import org.example.jpaimpl.UserRepoJpa;
-import org.example.pojo.*;
+import org.example.entity.*;
 import org.example.seed.*;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;

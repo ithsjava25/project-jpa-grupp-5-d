@@ -2,8 +2,7 @@ package org.example;
 
 import jakarta.persistence.EntityManager;
 import org.example.jpaimpl.*;
-import org.example.pojo.*;
-import org.example.seed.*;
+import org.example.entity.*;
 
 import java.util.Optional;
 import java.util.Scanner;

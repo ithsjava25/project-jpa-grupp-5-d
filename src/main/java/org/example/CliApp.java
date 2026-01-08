@@ -5,7 +5,6 @@ import jakarta.persistence.EntityTransaction;
 import org.example.enums.Language;
 import org.example.jpaimpl.*;
 
-import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-import org.example.pojo.*;
+import org.example.entity.*;
 
 public class CliApp {
 

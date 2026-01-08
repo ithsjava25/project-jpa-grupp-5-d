@@ -1,7 +1,6 @@
-package org.example.pojo;
+package org.example.entity;
 
 import jakarta.persistence.*;
-import org.example.repo.GenreRepo;
 
 import java.util.*;
 

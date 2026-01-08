@@ -3,7 +3,7 @@ package org.example.seed;
 import jakarta.persistence.EntityManager;
 import org.example.enums.Country;
 import org.example.jpaimpl.ActorRepoJpa;
-import org.example.pojo.Actor;
+import org.example.entity.Actor;
 
 import java.util.HashMap;
 import java.util.Map;

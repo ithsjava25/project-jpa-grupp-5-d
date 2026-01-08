@@ -1,6 +1,6 @@
 package org.example.repo;
 
-import org.example.pojo.Genre;
+import org.example.entity.Genre;
 
 import java.util.Optional;
 import java.util.List;

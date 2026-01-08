@@ -2,8 +2,7 @@ package org.example.jpaimpl;
 
 import jakarta.persistence.EntityManager;
 import org.example.enums.Country;
-import org.example.pojo.Actor;
-import org.example.pojo.Director;
+import org.example.entity.Director;
 import org.example.repo.DirectorRepo;
 
 import java.util.List;

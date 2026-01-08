@@ -1,6 +1,6 @@
 package org.example.repo;
 
-import org.example.pojo.Director;
+import org.example.entity.Director;
 import org.example.enums.Country;
 
 import java.util.List;
