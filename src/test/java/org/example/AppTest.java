@@ -114,7 +114,6 @@ public class AppTest {
         assertTrue(users.containsKey("AliceSmith"));
     }
 
-
     // === TESTER FÖR SEEDMOVIES ===
     @Test
     void testSeedMoviesCreatesMovies() {
