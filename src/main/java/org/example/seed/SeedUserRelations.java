@@ -3,8 +3,8 @@ package org.example.seed;
 import jakarta.persistence.EntityManager;
 import org.example.jpaimpl.UserRatingRepoJpa;
 import org.example.jpaimpl.UserRepoJpa;
-import org.example.pojo.Movie;
-import org.example.pojo.User;
+import org.example.entity.Movie;
+import org.example.entity.User;
 
 import java.util.*;
 

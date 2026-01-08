@@ -1,20 +1,16 @@
 package org.example.jpaimpl;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.TypedQuery;
-import jakarta.transaction.Transactional;
 import org.example.enums.Country;
 import org.example.enums.Language;
-import org.example.pojo.Movie;
-import org.example.pojo.Actor;
-import org.example.pojo.Director;
-import org.example.pojo.Genre;
+import org.example.entity.Movie;
+import org.example.entity.Actor;
+import org.example.entity.Director;
+import org.example.entity.Genre;
 import org.example.repo.MovieRepo;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;

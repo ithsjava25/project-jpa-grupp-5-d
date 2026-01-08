@@ -2,9 +2,9 @@ package org.example.repo;
 
 import org.example.enums.Country;
 import org.example.enums.Language;
-import org.example.pojo.Actor;
-import org.example.pojo.Director;
-import org.example.pojo.Movie;
+import org.example.entity.Actor;
+import org.example.entity.Director;
+import org.example.entity.Movie;
 
 import java.time.LocalDate;
 import java.util.List;

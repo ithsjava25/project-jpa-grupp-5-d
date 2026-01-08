@@ -3,7 +3,7 @@ package org.example;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceConfiguration;
-import org.example.pojo.*;
+import org.example.entity.*;
 import org.hibernate.jpa.HibernatePersistenceConfiguration;
 
 public class JpaUtil {
@@ -27,6 +27,8 @@ public class JpaUtil {
     public static EntityManager getEntityManager(){
         return emf.createEntityManager();
     }
+
+
 
     public static void close() {
         emf.close();

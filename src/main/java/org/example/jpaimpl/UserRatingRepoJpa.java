@@ -1,9 +1,9 @@
 package org.example.jpaimpl;
 
 import jakarta.persistence.EntityManager;
-import org.example.pojo.Movie;
-import org.example.pojo.User;
-import org.example.pojo.UserRating;
+import org.example.entity.Movie;
+import org.example.entity.User;
+import org.example.entity.UserRating;
 import org.example.repo.UserRatingRepo;
 
 import java.util.List;

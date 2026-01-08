@@ -2,7 +2,7 @@ package org.example.seed;
 
 import jakarta.persistence.EntityManager;
 import org.example.jpaimpl.GenreRepoJpa;
-import org.example.pojo.Genre;
+import org.example.entity.Genre;
 
 import java.util.HashMap;
 import java.util.Map;
