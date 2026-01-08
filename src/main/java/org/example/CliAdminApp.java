@@ -406,7 +406,6 @@ public class CliAdminApp {
             }
         }
     }
-
     public void printOptions(){
         System.out.println("""
                 =============ADMIN MENU=============
