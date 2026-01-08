@@ -63,10 +63,13 @@ TODO:
     ## Add director to movie no check for movie title existing
         DONE //LINUS
 ## Add a new genre - Add alrdy existing does not work, but it consume the auto-increment ID.
-    PÅBÖRJAR //LINUS
+    DONE //LINUS
 ## Add a new movie - fix date handling as it was done in "find movies by release date"
     DONE //LINUS
 
+## User rating prints org.example.entity.userRating all ratings - many-to-many
+## list all movies - println
+## Menu is still gets printed doubled
 
 IMDB - variant
 

@@ -91,7 +91,7 @@ public class CliAdminApp {
                         }
                         parsedDate = LocalDate.parse(date);
                     } catch (DateTimeParseException e) {
-                        System.out.println(RED + "Invalid date format. " + e.getMessage() + ". Press Enter to continue." + RESET);
+                        System.out.println(RED + "Invalid date format. " + e.getMessage() + RESET);
                         continue;
                     }
 
@@ -102,11 +102,11 @@ public class CliAdminApp {
                         length = Integer.parseInt(sc.nextLine().trim());
                         if (length < 0) {
                             System.out.println(RED + "Length must be a positive number." + RESET);
-                            System.exit(0);
+                            return;
                         }
                     } catch (NumberFormatException e) {
                         System.out.println(RED + "Invalid length. Please enter a number." + RESET);
-                        System.exit(0);
+                        return;
                     }
 
                     // --- Country ---
@@ -154,7 +154,6 @@ public class CliAdminApp {
                             System.out.println(GREEN + "Movie: '" + movieTitle + "' was successfully deleted" + RESET);
                         }
                     });
-
                 }
                 // ADD AN ACTOR TO A MOVIE
                 case 5 -> {
@@ -415,14 +414,14 @@ public class CliAdminApp {
                 2. Delete user (userName)
                 3. Add a new movie (title, date YYYY-MM-DD, length in minutes, country, language)
                 4. Delete movie (title)
-                5. Add an actor to a movie (actor name & movie title)
+                5. Add an actor to a movie (actorName & movie title)
                 6. Add a director to a movie (movieId, directorId)
                 7. Add a new Genre (genreName)
                 8. Delete a genre (genreId)
-                9. Add a new actor (actorname, country)
-                10. Delete an actor (actor name)
+                9. Add a new actor (actorName, country)
+                10. Delete an actor (actorName)
                 11. Add a new Director (directorName, country)
-                12. Delete a director (director name)
+                12. Delete a director (directorName)
                 13. Find users by username (userName)
                 0. Exit
                 """);

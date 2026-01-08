@@ -204,9 +204,6 @@ public class CliApp {
                     System.out.println("***** You have selected to list all movies *****");
                     List<Movie> allMovies = movieRepoJpa.getAllMovies();
                     allMovies.forEach(m -> System.out.println(GREEN + "- " + m.getTitle() + RESET));
-
-                    System.out.println("Press enter to continue back to menu.");
-                    sc.nextLine();
                 }
                 // ====== LIST MOVIES BY LANGUAGE ======
                 case 2 -> {
@@ -228,13 +225,10 @@ public class CliApp {
                         System.out.println(RED + "Invalid language input." + RESET);
                         System.out.println("Available languages: ");
                         for (Language l : Language.values()) {
-                            System.out.println("- " + l);
+                            System.out.print("- " + l);
                         }
                     }
-                    System.out.println("Press enter to continue back to menu.");
-                    sc.nextLine();
                 }
-
                 // ====== LIST MOVIES BY RANKING ======
                 case 3 -> {
                     System.out.println("***** You have selected to list movies by ranking *****");
@@ -265,8 +259,6 @@ public class CliApp {
                     } catch (NumberFormatException e) {
                         System.out.println(RED + "Invalid Input. Please enter numeric values only" + RESET);
                     }
-                    System.out.println("Press enter to continue back to menu.");
-                    sc.nextLine();
                 }
                 // ====== LIST MOVIES BY LENGTH ======
                 case 4 -> {
@@ -280,6 +272,16 @@ public class CliApp {
                         int minLenInt = Integer.parseInt(minLen);
                         int maxLenInt = Integer.parseInt(maxLen);
 
+                        //negativa värden
+                        if (minLenInt < 0 || maxLenInt < 0){
+                            System.out.println(RED + "Length cannot be negative" + RESET);
+                        }
+
+                        // min > max
+                        if (minLenInt > maxLenInt) {
+                            System.out.println(RED + "Minimum length cannot be greater than maximum length" + RESET);
+                        }
+
                         movieRepoJpa.getMovieByLength(minLenInt, maxLenInt)
                             .forEach(m -> System.out.println(GREEN + m.getTitle()
                                 + " length: " + m.getLength() + " min" + RESET));
@@ -287,8 +289,6 @@ public class CliApp {
                     } catch (NumberFormatException e) {
                         System.out.println(RED + "Please enter a numeric value" + RESET);
                     }
-                    System.out.println("Press enter to continue back to menu.");
-                    sc.nextLine();
                 }
                 // ====== LIST MOVIES BY DATE ======
                 case 5 -> {
@@ -320,8 +320,6 @@ public class CliApp {
                     movieRepoJpa.getMovieByReleaseDate(fromDate, toDate)
                         .forEach(m -> System.out.println(GREEN + m.getTitle() + " date: " + m.getReleaseDate() + RESET));
 
-                    System.out.println("Press enter to continue back to menu.");
-                    sc.nextLine();
                 }
                 // ====== LIST MOVIES BY ACTOR ======
                 case 6 -> {
@@ -340,8 +338,6 @@ public class CliApp {
                         },
                         () -> System.out.println(RED + "No actor found with name: " + actorName + RESET)
                     );
-                    System.out.println("Press enter to continue back to menu.");
-                    sc.nextLine();
                 }
                 // ====== LIST MOVIES BY DIRECTOR ======
                 case 7 -> {
@@ -365,8 +361,6 @@ public class CliApp {
                     } else {
                         moviesByDirector.forEach(m -> System.out.println(GREEN + "- " + m.getTitle() + RESET));
                     }
-                    System.out.println("Press enter to continue back to menu.");
-                    sc.nextLine();
                 }
                 // ====== FIND MOVIES BY GENRE ======
                 case 8 -> {
@@ -389,8 +383,6 @@ public class CliApp {
                     } else {
                         moviesByGenre.forEach(m -> System.out.println(GREEN + "- " + m.getTitle() + RESET));
                     }
-                    System.out.println("Press enter to continue back to menu.");
-                    sc.nextLine();
                 }
                 // ====== FIND MOVIES BY TITLE ======
                 case 9 -> {
@@ -446,8 +438,6 @@ public class CliApp {
                     } else {
                         System.out.println(RED + "Movie not found: " + title + RESET);
                     }
-                    System.out.println("Press enter to continue back to menu.");
-                    sc.nextLine();
                 }
                 // ====== Show Options again ======
                 case 10 -> {
@@ -533,7 +523,6 @@ public class CliApp {
                             System.out.println(RED + "Failed to rate movie: " + e.getMessage() + RESET);
                         }
                         System.out.println("Press enter to continue back to menu.");
-                        sc.nextLine();
                     });
 
 
@@ -553,7 +542,6 @@ public class CliApp {
                         }
                     }
                     System.out.println("Press enter to continue back to menu.");
-                    sc.nextLine();
                 }
                 // Get rating for a movie
                 case 3 -> {
@@ -574,7 +562,6 @@ public class CliApp {
                             System.out.println(RED + "You have not rated this movie yet." + RESET);
                         }
                         System.out.println("Press enter to continue back to menu.");
-                        sc.nextLine();
                     });
                 }
                 // Print options again
