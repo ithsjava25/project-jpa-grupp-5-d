@@ -2,8 +2,8 @@ package org.example;
 import org.example.enums.Country;
 import org.example.enums.Language;
 import org.example.jpaimpl.*;
-import org.example.pojo.Genre;
-import org.example.pojo.User;
+import org.example.entity.Genre;
+import org.example.entity.User;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -13,6 +13,10 @@ import java.util.Optional;
 import java.util.Scanner;
 
 public class CliAdminApp {
+
+    public static final String RED = "\u001B[31m";
+    public static final String GREEN = "\u001B[32m";
+    public static final String RESET = "\u001B[0m";
 
     public void adminOptions(Scanner sc,
                              User user) {
@@ -45,13 +49,13 @@ public class CliAdminApp {
                     String password = sc.nextLine().trim();
 
                     if (userName.isEmpty() || password.isEmpty()) {
-                        System.out.println("Username and password cannot be empty.");
+                        System.out.println(RED + "Username and password cannot be empty." + RESET);
                         break; // stop this case early
                     }
                     JpaRunner.runInTransaction(em -> {
                         UserRepoJpa userRepo = new UserRepoJpa(em);
                         userRepo.addUser(userName, password);
-                        System.out.println("New user '" + userName + "' added!");
+                        System.out.println(GREEN + "New user '" + userName + "' added!" + RESET);
                     });
                 }
                 // DELETE A USER
@@ -63,11 +67,11 @@ public class CliAdminApp {
                         UserRepoJpa userRepo = new UserRepoJpa(em);
                         var userOpt = userRepo.findByUserName(userName);
                         if (userOpt.isEmpty()){
-                            System.out.println("No username found with username: " + userName);
+                            System.out.println(RED + "No username found with username: " + userName + RESET);
                         } else {
                             long userId = userOpt.get().getId();
                             userRepo.deleteUser(userId);
-                            System.out.println("User '" + userName + "' successfully deleted!");
+                            System.out.println(GREEN + "User '" + userName + "' successfully deleted!" + RESET);
                         }
                     });
                 }
@@ -87,7 +91,7 @@ public class CliAdminApp {
                         }
                         parsedDate = LocalDate.parse(date);
                     } catch (DateTimeParseException e) {
-                        System.out.println("Invalid date format. " + e.getMessage() + ". Press Enter to continue.");
+                        System.out.println(RED + "Invalid date format. " + e.getMessage() + ". Press Enter to continue." + RESET);
                         continue;
                     }
 
@@ -97,11 +101,11 @@ public class CliAdminApp {
                         System.out.println("Enter the length in minutes:");
                         length = Integer.parseInt(sc.nextLine().trim());
                         if (length < 0) {
-                            System.out.println("Length must be a positive number.");
+                            System.out.println(RED + "Length must be a positive number." + RESET);
                             System.exit(0);
                         }
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid length. Please enter a number.");
+                        System.out.println(RED + "Invalid length. Please enter a number." + RESET);
                         System.exit(0);
                     }
 
@@ -111,7 +115,7 @@ public class CliAdminApp {
                         System.out.println("Enter the country:");
                         newCountry = Country.valueOf(sc.nextLine().trim().toUpperCase());
                     } catch (IllegalArgumentException e) {
-                        System.out.println("Invalid country. Please enter one of: " + Arrays.toString(Country.values()));
+                        System.out.println(RED + "Invalid country. Please enter one of: " + Arrays.toString(Country.values()) + RESET);
                         return;
                     }
 
@@ -121,7 +125,7 @@ public class CliAdminApp {
                         System.out.println("Enter the language:");
                         newLanguage = Language.valueOf(sc.nextLine().trim().toUpperCase());
                     } catch (IllegalArgumentException e) {
-                        System.out.println("Invalid language. Please enter one of: " + Arrays.toString(Language.values()));
+                        System.out.println(RED + "Invalid language. Please enter one of: " + Arrays.toString(Language.values()) + RESET);
                         return;
                     }
 
@@ -130,7 +134,7 @@ public class CliAdminApp {
                     JpaRunner.runInTransaction(em -> {
                         MovieRepoJpa movieRepo = new MovieRepoJpa(em);
                         movieRepo.addMovie(movie, parsedDate, finalNewLength, newCountry, newLanguage);
-                        System.out.println("Movie added!");
+                        System.out.println(GREEN + "Movie added!" + RESET);
                     });
                 }
                 // DELETE A MOVIE
@@ -143,11 +147,11 @@ public class CliAdminApp {
                         var movieOpt = movieRepo.findByTitle(movieTitle);
 
                         if (movieOpt.isEmpty()) {
-                            System.out.println("No movie found with the title: " + movieTitle);
+                            System.out.println(RED + "No movie found with the title: " + movieTitle + RESET);
                         } else {
                             long movieId = movieOpt.get().getId();
                             movieRepo.deleteMovie(movieId);
-                            System.out.println("Movie: '" + movieTitle + "' was successfully deleted");
+                            System.out.println(GREEN + "Movie: '" + movieTitle + "' was successfully deleted" + RESET);
                         }
                     });
 
@@ -167,12 +171,12 @@ public class CliAdminApp {
                         var actorOpt = actorRepo.findByName(actorName);
                         var movieOpt = movieRepo.findByTitle(movieTitle);
                         if (actorOpt.isEmpty()) {
-                            System.out.println("No actor found with name: " + actorName);
+                            System.out.println(RED + "No actor found with name: " + actorName + RESET);
                         } else if (movieOpt.isEmpty()) {
-                            System.out.println("No movie found with that title: " + movieTitle);
+                            System.out.println(RED + "No movie found with that title: " + movieTitle + RESET);
                         } else {
                             movieRepo.addActors(movieTitle, List.of(actorOpt.get()));
-                            System.out.println("Actor added to movie!");
+                            System.out.println(GREEN + "Actor added to movie!" + RESET);
                         }
                     });
                 }
@@ -191,12 +195,12 @@ public class CliAdminApp {
                         var directorOpt = directorRepo.findByName(directorName);
                         var movieOpt = movieRepo.findByTitle(movieTitle);
                         if (directorOpt.isEmpty()) {
-                            System.out.println("No actor found with name: " + directorName);
+                            System.out.println(RED + "No actor found with name: " + directorName + RESET);
                         } else if (movieOpt.isEmpty()) {
-                            System.out.println("No movie found with that title: " + movieTitle);
+                            System.out.println(RED + "No movie found with that title: " + movieTitle + RESET);
                         } else {
                             movieRepo.setDirector(movieTitle, directorOpt.get());
-                            System.out.println("Director '" + directorName + "' set for movie '" + movieTitle + "'!");
+                            System.out.println(GREEN + "Director '" + directorName + "' set for movie '" + movieTitle + "'!" + RESET);
                         }
                     });
                 }
@@ -206,14 +210,17 @@ public class CliAdminApp {
                     String genre = sc.nextLine().trim();
 
                     if (genre.isEmpty()) {
-                        System.out.println("Genre name cannot be empty.");
+                        System.out.println(RED + "Genre name cannot be empty." + RESET);
                         break;
                     }
 
                     JpaRunner.runInTransaction(em -> {
                         GenreRepoJpa genreRepo = new GenreRepoJpa(em);
-                        genreRepo.addGenre(genre);
-                        System.out.println("Genre '" + genre + "' added!");
+                        if (genreRepo.addGenre(genre)) {
+                            System.out.println(GREEN + "Genre '" + genre + "' added!" + RESET);
+                        } else {
+                            System.out.println(RED + "The genre: '" + genre + "' already exist." + RESET);
+                        }
                     });
                 }
                 // DELETE A GENRE
@@ -226,16 +233,16 @@ public class CliAdminApp {
                         Optional<Genre> genreOpt = genreRepo.findByName(genreName);
 
                         if (genreOpt.isEmpty()) {
-                            System.out.println("No genre found with name: " + genreName);
+                            System.out.println(RED + "No genre found with name: " + genreName + RESET);
                             return; // exit the transaction block
                         }
 
                         Genre genre = genreOpt.get();
                         long id = genre.getGenreID();
                         if (genreRepo.deleteGenre(id)) {
-                            System.out.println("Genre with ID " + id + " is deleted.");
+                            System.out.println(GREEN + "Genre with ID " + id + " is deleted." + RESET);
                         } else {
-                            System.out.println("Something went wrong with delete method.");
+                            System.out.println(RED + "Something went wrong with delete method." + RESET);
                         }
                     });
                 }
@@ -246,7 +253,7 @@ public class CliAdminApp {
 
                     // Kolla så att namn inte innehåller ottilåtna tecken.
                     if (!actorName.matches("^[A-Za-z]+( [A-Za-z]+){1,}$")) {
-                        System.out.println("Invalid name format. Please enter (at least) first and last name.");
+                        System.out.println(RED + "Invalid name format. Please enter (at least) first and last name." + RESET);
                         break;
                     }
 
@@ -257,14 +264,28 @@ public class CliAdminApp {
                     try {
                         country = Country.valueOf(countryInput);
                     } catch (IllegalArgumentException e) {
-                        System.out.println("Invalid country. Please enter one of: " + Arrays.toString(Country.values()));
+                        System.out.println(RED + "Invalid country. Please enter one of: " + Arrays.toString(Country.values()) + RESET);
                         break; // stop this case early
                     }
 
                     JpaRunner.runInTransaction(em -> {
                         ActorRepoJpa actorRepo = new ActorRepoJpa(em);
+
+                        var existingActor = actorRepo.findByName(actorName);
+
+                        if (existingActor.isPresent()) {
+                            System.out.println("Actor with name: " + actorName + " already exists.");
+                            System.out.println("Do you really want to add this actor anyway? (Y/N)");
+                            String answer = sc.nextLine().trim().toLowerCase();
+
+                            if (!answer.equals("y")) {
+                                System.out.println(RED + "The actor was not added, returning to menu." + RESET);
+                                return;
+                            }
+                        }
+
                         actorRepo.addActor(actorName, country);
-                        System.out.println("Actor '" + actorName + "' from " + country + " added!");
+                        System.out.println(GREEN + "Actor '" + actorName + "' from " + country + " added!" + RESET);
                     });
                 }
                 // DELETE AN ACTOR
@@ -273,7 +294,7 @@ public class CliAdminApp {
                     String actorName = sc.nextLine().trim();
 
                     if (actorName.isEmpty()) {
-                        System.out.println("Actor name cannot be empty.");
+                        System.out.println(RED + "Actor name cannot be empty." + RESET);
                         break; // stop this case early
                     }
 
@@ -282,9 +303,9 @@ public class CliAdminApp {
                         boolean deleted = actorRepo.deleteByName(actorName);
 
                         if (deleted) {
-                            System.out.println("Actor '" + actorName + "' successfully deleted!");
+                            System.out.println(GREEN + "Actor '" + actorName + "' successfully deleted!" + RESET);
                         } else {
-                            System.out.println("No actor found with name: " + actorName);
+                            System.out.println(RED + "No actor found with name: " + actorName + RESET);
                         }
                     });
                 }
@@ -295,7 +316,7 @@ public class CliAdminApp {
 
                     // Kolla så att namn inte innehåller ottilåtna tecken.
                     if (!directorName.matches("^[A-Za-z]+( [A-Za-z]+){1,}$")) {
-                        System.out.println("Invalid name format. Please enter (at least) first and last name.");
+                        System.out.println(RED + "Invalid name format. Please enter (at least) first and last name." + RESET);
                         break;
                     }
 
@@ -306,14 +327,28 @@ public class CliAdminApp {
                     try {
                         country = Country.valueOf(countryInput);
                     } catch (IllegalArgumentException e) {
-                        System.out.println("Invalid country. Please enter one of: " + Arrays.toString(Country.values()));
+                        System.out.println(RED + "Invalid country. Please enter one of: " + Arrays.toString(Country.values()) + RESET);
                         break; // stop this case early
                     }
 
                     JpaRunner.runInTransaction(em -> {
                         DirectorRepoJpa directorRepo = new DirectorRepoJpa(em);
+
+                        var existingDirector = directorRepo.findByName(directorName);
+
+                        if (existingDirector.isPresent()) {
+                            System.out.println("Director with name : " + directorName + " already exists!");
+                            System.out.println("Do you want to add this director anyways? (Y/N)");
+                            String answer = sc.nextLine().trim().toLowerCase();
+
+                            if (!answer.equals("y")) {
+                                System.out.println(RED + "The director was not added, now returning to menu." + RESET);
+                                return;
+                            }
+                        }
+
                         directorRepo.addDirector(directorName, country);
-                        System.out.println("Director '" + directorName + "' from " + country + " added!");
+                        System.out.println(GREEN + "Director '" + directorName + "' from " + country + " added!" + RESET);
                     });
                 }
                 // DELETE A DIRECTOR
@@ -322,7 +357,7 @@ public class CliAdminApp {
                     String directorName = sc.nextLine().trim();
 
                     if (directorName.isEmpty()) {
-                        System.out.println("Director name cannot be empty.");
+                        System.out.println(RED + "Director name cannot be empty." + RESET);
                         break; // stop this case early
                     }
 
@@ -331,9 +366,9 @@ public class CliAdminApp {
                         boolean deleted = directorRepo.deleteByName(directorName);
 
                         if (deleted) {
-                            System.out.println("Director '" + directorName + "' successfully deleted!");
+                            System.out.println(GREEN + "Director '" + directorName + "' successfully deleted!" + RESET);
                         } else {
-                            System.out.println("No director found with name: " + directorName);
+                            System.out.println(RED + "No director found with name: " + directorName + RESET);
                         }
                     });
                 }
@@ -343,7 +378,7 @@ public class CliAdminApp {
                     String userName = sc.nextLine().trim();
 
                     if (userName.isEmpty()) {
-                        System.out.println("Username cannot be empty.");
+                        System.out.println(RED + "Username cannot be empty." + RESET);
                         break; // stop this case early
                     }
 
@@ -352,7 +387,7 @@ public class CliAdminApp {
                         var userOpt = userRepo.findByUserName(userName);
 
                         if (userOpt.isEmpty()) {
-                            System.out.println("No user found with username: " + userName);
+                            System.out.println(RED + "No user found with username: " + userName + RESET);
                         } else {
                             System.out.println("Found user: " + userOpt.get().getUserName());
                         }

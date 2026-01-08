@@ -16,16 +16,16 @@ public class GenreRepoJpa implements GenreRepo {
     }
 
     @Override
-    public Genre addGenre(String genreName) {
+    public boolean addGenre(String genreName) {
         Optional<Genre> existing = findByName(genreName);
 
         if (existing.isPresent()) {
-            return existing.get(); // inget att uppdatera för genre
+            return false;
         } else {
             Genre genre = new Genre();
             genre.setGenreName(genreName);
             em.persist(genre);
-            return genre;
+            return true;
         }
     }
 

@@ -41,8 +41,10 @@ TODO:
     DONE ISH - testa date och length för att avgöra om det känns bra //MARKO
 ## Add a new actor - if actor name already exist doublecheck with user if you really want to add the actor
         ## Says new actor is added, but its not. Some doublecheck?
+    DONE //MARKO
+
 ## Add a new director - if actor name already exist doublecheck with user if you really want to add the actor
-        ## same as above?
+        ## same as above?       PÅBÖRJAD KANSKE DONE // OSKAR
 ## Delete a movie by ID - actually wants title, change name of menu option
     DONE //LINUS
 ## Add an actor to a movie (movie title and actor name) - inconsistent menu name
@@ -61,6 +63,7 @@ TODO:
     ## Add director to movie no check for movie title existing
         DONE //LINUS
 ## Add a new genre - Add alrdy existing does not work, but it consume the auto-increment ID.
+    PÅBÖRJAR //LINUS
 ## Add a new movie - fix date handling as it was done in "find movies by release date"
     DONE //LINUS
 

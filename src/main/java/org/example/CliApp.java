@@ -18,6 +18,9 @@ public class CliApp {
 
 
     private final EntityManager em;
+    public static final String RED = "\u001B[31m";
+    public static final String GREEN = "\u001B[32m";
+    public static final String RESET = "\u001B[0m";
 
     public CliApp(EntityManager em) {
         this.em = em;
@@ -49,7 +52,7 @@ public class CliApp {
                     default -> keepRunning = false;
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Please enter a numeric value");
+                System.out.println(RED + "Please enter a numeric value" + RESET);
             }
 
 
@@ -78,7 +81,7 @@ public class CliApp {
             try {
                 choice = Integer.parseInt(input);
             } catch (NumberFormatException e) {
-                System.out.println("Please enter a numeric value");
+                System.out.println(RED + "Please enter a numeric value" + RESET);
                 printOptionsUser();
                 continue;
             }
@@ -91,11 +94,11 @@ public class CliApp {
                     List<Movie> favorites = userRepoJpa.getFavoriteMovies(userID);
 
                     if (favorites.isEmpty()) {
-                        System.out.println("No favorite movie found");
+                        System.out.println(RED + "No favorite movie found" + RESET);
                     } else {
-                        System.out.println("Favorite movies: ");
+                        System.out.println(GREEN + "Favorite movies: " + RESET);
                         favorites.forEach(movie ->
-                            System.out.println("- " + movie.getTitle()));
+                            System.out.println(GREEN + "- " + movie.getTitle() + RESET));
                     }
                     System.out.println("Press enter to continue back to menu.");
                     sc.nextLine();
@@ -110,9 +113,9 @@ public class CliApp {
 
                     if (movieOpt.isPresent()) {
                         userRepoJpa.addFavoriteMovie(userID, movieOpt.get());
-                        System.out.println("Movie added to favorites");
+                        System.out.println(GREEN + "Movie added to favorites" + RESET);
                     } else {
-                        System.out.println("Movie not found");
+                        System.out.println(RED + "Movie not found" + RESET);
                     }
                     System.out.println("Press enter to continue back to menu.");
                     sc.nextLine();
@@ -128,9 +131,9 @@ public class CliApp {
                     if (movieOpt.isPresent()) {
                         Movie movie = movieOpt.get();
                         userRepoJpa.removeFavoriteMovie(userID, movie);
-                        System.out.println("Movie removed from favorites");
+                        System.out.println(GREEN + "Movie removed from favorites" + RESET);
                     } else {
-                        System.out.println("Movie not found");
+                        System.out.println(RED + "Movie not found" + RESET);
                     }
                     System.out.println("Press enter to continue back to menu.");
                     sc.nextLine();
@@ -144,11 +147,11 @@ public class CliApp {
 
                     if (userOpt.isPresent()) {
                         User foundUser = userOpt.get();
-                        System.out.println("User found: ");
-                        System.out.println("ID: " + foundUser.getId());
-                        System.out.println("Username: " + foundUser.getUserName());
+                        System.out.println(GREEN + "User found: ");
+                        System.out.println(GREEN + "ID: " + foundUser.getId());
+                        System.out.println(GREEN + "Username: " + foundUser.getUserName() + RESET);
                     } else {
-                        System.out.println("No user found with that username: " + userName);
+                        System.out.println(RED + "No user found with that username: " + userName + RESET);
                     }
                     System.out.println("Press enter to continue back to menu.");
                     sc.nextLine();
@@ -161,7 +164,7 @@ public class CliApp {
                     System.out.println("Returning to main menu...");
                     running = false;
                 }
-                default -> System.out.println("Invalid option");
+                default -> System.out.println(RED + "Invalid option" + RESET);
             }
 
             // ✅ Visa menyn igen om vi fortfarande är i loopen
@@ -200,7 +203,7 @@ public class CliApp {
                 case 1 -> {
                     System.out.println("***** You have selected to list all movies *****");
                     List<Movie> allMovies = movieRepoJpa.getAllMovies();
-                    allMovies.forEach(m -> System.out.println("- " + m.getTitle()));
+                    allMovies.forEach(m -> System.out.println(GREEN + "- " + m.getTitle() + RESET));
 
                     System.out.println("Press enter to continue back to menu.");
                     sc.nextLine();
@@ -216,13 +219,13 @@ public class CliApp {
 
                         List<Movie> movies = movieRepoJpa.getMovieByLanguage(lang);
                         if (movies.isEmpty()) {
-                            System.out.println("No movies found for language: " + lang);
+                            System.out.println(RED + "No movies found for language: " + lang + RESET);
                         } else {
-                            movies.forEach(m -> System.out.println("- " + m.getTitle()));
+                            movies.forEach(m -> System.out.println(GREEN + "- " + m.getTitle() + RESET));
                         }
 
                     } catch (IllegalArgumentException e) {
-                        System.out.println("Invalid language input.");
+                        System.out.println(RED + "Invalid language input." + RESET);
                         System.out.println("Available languages: ");
                         for (Language l : Language.values()) {
                             System.out.println("- " + l);
@@ -244,23 +247,23 @@ public class CliApp {
                     try {
                         int minRankInt = Integer.parseInt(minRank);
                         if (minRankInt < 1 || minRankInt > 5){
-                            System.out.println("Invalid minimum ranking. Please enter a value between 1 and 5");
+                            System.out.println(RED + "Invalid minimum ranking. Please enter a value between 1 and 5" + RESET);
                         }
                         int maxRankInt = Integer.parseInt(maxRank);
                         if (maxRankInt < 1 || maxRankInt > 5){
-                            System.out.println("Invalid maximum ranking. Please enter a value between 1 and 5");
+                            System.out.println(RED + "Invalid maximum ranking. Please enter a value between 1 and 5" + RESET);
                         }
 
                         if (minRankInt > maxRankInt) {
-                            System.out.println("Minimum ranking cannot be higher than maxmimum ranking");
+                            System.out.println(RED + "Minimum ranking cannot be higher than maxmimum ranking" + RESET);
                         }
 
                         movieRepoJpa.getMovieByRanking(minRankInt, maxRankInt)
-                            .forEach(m -> System.out.println(m.getTitle()
-                                + " rank: " + m.getRanking()));
+                            .forEach(m -> System.out.println(GREEN + m.getTitle()
+                                + " rank: " + m.getRanking() + RESET));
 
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid Input. Please enter numeric values only");
+                        System.out.println(RED + "Invalid Input. Please enter numeric values only" + RESET);
                     }
                     System.out.println("Press enter to continue back to menu.");
                     sc.nextLine();
@@ -278,11 +281,11 @@ public class CliApp {
                         int maxLenInt = Integer.parseInt(maxLen);
 
                         movieRepoJpa.getMovieByLength(minLenInt, maxLenInt)
-                            .forEach(m -> System.out.println(m.getTitle()
-                                + " length: " + m.getLength() + " min"));
+                            .forEach(m -> System.out.println(GREEN + m.getTitle()
+                                + " length: " + m.getLength() + " min" + RESET));
 
                     } catch (NumberFormatException e) {
-                        System.out.println("Please enter a numeric value");
+                        System.out.println(RED + "Please enter a numeric value" + RESET);
                     }
                     System.out.println("Press enter to continue back to menu.");
                     sc.nextLine();
@@ -310,12 +313,12 @@ public class CliApp {
                         fromDate = LocalDate.parse(from);
                         toDate = LocalDate.parse(to);
                     } catch (DateTimeParseException e) {
-                        System.out.println("Invalid date format. " + e.getMessage() + ". Press Enter to continue.");
+                        System.out.println(RED + "Invalid date format. " + e.getMessage() + ". Press Enter to continue." + RESET);
                         continue;
                     }
 
                     movieRepoJpa.getMovieByReleaseDate(fromDate, toDate)
-                        .forEach(m -> System.out.println(m.getTitle() + " date: " + m.getReleaseDate()));
+                        .forEach(m -> System.out.println(GREEN + m.getTitle() + " date: " + m.getReleaseDate() + RESET));
 
                     System.out.println("Press enter to continue back to menu.");
                     sc.nextLine();
@@ -330,12 +333,12 @@ public class CliApp {
                         actor -> {
                             List<Movie> moviesByActor = movieRepoJpa.getByActor(actor);
                             if (moviesByActor.isEmpty()) {
-                                System.out.println("No movies found for actor: " + actor.getActorName());
+                                System.out.println(RED + "No movies found for actor: " + actor.getActorName() + RESET);
                             } else {
-                                moviesByActor.forEach(m -> System.out.println("- " + m.getTitle()));
+                                moviesByActor.forEach(m -> System.out.println(GREEN + "- " + m.getTitle() + RESET));
                             }
                         },
-                        () -> System.out.println("No actor found with name: " + actorName)
+                        () -> System.out.println(RED + "No actor found with name: " + actorName + RESET)
                     );
                     System.out.println("Press enter to continue back to menu.");
                     sc.nextLine();
@@ -350,7 +353,7 @@ public class CliApp {
                     Optional<Director> directorOpt = directorRepoJpa.findByName(directorName);
 
                     if (directorOpt.isEmpty()) {
-                        System.out.println("No director found with name: " + directorName);
+                        System.out.println(RED + "No director found with name: " + directorName + RESET);
                         break;
                     }
 
@@ -358,9 +361,9 @@ public class CliApp {
                     List<Movie> moviesByDirector = movieRepoJpa.getByDirector(director);
 
                     if (moviesByDirector.isEmpty()) {
-                        System.out.println("No movies found for director: " + director.getDirectorName());
+                        System.out.println(RED + "No movies found for director: " + director.getDirectorName() + RESET);
                     } else {
-                        moviesByDirector.forEach(m -> System.out.println("- " + m.getTitle()));
+                        moviesByDirector.forEach(m -> System.out.println(GREEN + "- " + m.getTitle() + RESET));
                     }
                     System.out.println("Press enter to continue back to menu.");
                     sc.nextLine();
@@ -374,7 +377,7 @@ public class CliApp {
                     Optional<Genre> genreOpt = genreRepoJpa.findByName(genreName);
 
                     if (genreOpt.isEmpty()) {
-                        System.out.println("No genre found with name: " + genreName + ". Press Enter to continue.");
+                        System.out.println(RED + "No genre found with name: " + genreName + ". Press Enter to continue." + RESET);
                         continue;
                     }
 
@@ -382,9 +385,9 @@ public class CliApp {
                     List<Movie> moviesByGenre = movieRepoJpa.getMovieByGenre(genre.getName());
 
                     if (moviesByGenre.isEmpty()) {
-                        System.out.println("No movies found in genre: " + genre.getName());
+                        System.out.println( RED + "No movies found in genre: " + genre.getName() + RESET);
                     } else {
-                        moviesByGenre.forEach(m -> System.out.println("- " + m.getTitle()));
+                        moviesByGenre.forEach(m -> System.out.println(GREEN + "- " + m.getTitle() + RESET));
                     }
                     System.out.println("Press enter to continue back to menu.");
                     sc.nextLine();
@@ -399,49 +402,49 @@ public class CliApp {
 
                     if (movieOpt.isPresent()) {
                         Movie found = movieOpt.get();
-                        System.out.println("===== MOVIE FOUND =====");
+                        System.out.println(GREEN + "===== MOVIE FOUND =====" + RESET);
 
                         // -- TITLE
-                        System.out.println("Title: " + found.getTitle());
+                        System.out.println(GREEN + "Title: " + found.getTitle() + RESET);
 
                         // -- RELEASE DATE
-                        System.out.println("Release date: " + found.getReleaseDate());
+                        System.out.println(GREEN + "Release date: " + found.getReleaseDate() + RESET);
 
                         // -- DIRECTOR
                         if (found.getDirector() != null) {
-                            System.out.println("Director: " + found.getDirector().getDirectorName());
+                            System.out.println(GREEN + "Director: " + found.getDirector().getDirectorName() + RESET);
                         } else {
-                            System.out.println("No directors found");
+                            System.out.println(RED + "No directors found" + RESET);
                         }
 
                         // -- ACTORS
                         if (found.getActors() != null && !found.getActors().isEmpty()) {
-                            System.out.print("Actors: ");
+                            System.out.print(GREEN + "Actors: ");
 
                             String actorsFormatted = found.getActors().stream()
                                     .map(Actor::getActorName).collect(Collectors.joining(", "));
-                            System.out.println("(" + actorsFormatted + ")");
+                            System.out.println(GREEN + "(" + actorsFormatted + ")" + RESET);
 
                             //found.getActors().forEach(a -> System.out.println(a.getActorName()));
                         } else {
-                            System.out.println("No actors found");
+                            System.out.println(RED + "No actors found" + RESET);
                         }
 
                         // -- GENRES
                         if (found.getGenres() != null && !found.getGenres().isEmpty()) {
-                            System.out.println("Genres: ");
+                            System.out.println(GREEN + "Genres: ");
 
                             String genresFormatted = found.getGenres().stream()
                                 .map(Genre::getGenreName).collect(Collectors.joining(", "));
-                            System.out.println("(" + genresFormatted + ")");
+                            System.out.println(GREEN + "(" + genresFormatted + ")" + RESET);
 
                         } else {
-                            System.out.println("No genres found");
+                            System.out.println(RED + "No genres found" + RESET);
                         }
 
                         System.out.println("========================\n");
                     } else {
-                        System.out.println("Movie not found: " + title);
+                        System.out.println(RED + "Movie not found: " + title + RESET);
                     }
                     System.out.println("Press enter to continue back to menu.");
                     sc.nextLine();
@@ -454,7 +457,7 @@ public class CliApp {
                     System.out.println("Returning to main menu...");
                     running = false;
                 }
-                default -> System.out.println("Invalid option");
+                default -> System.out.println(RED + "Invalid option" + RESET);
             }
             if (running) {
                 System.out.println();
@@ -481,7 +484,7 @@ public class CliApp {
             try {
                 choice = Integer.parseInt(input);
             } catch (NumberFormatException e) {
-                System.out.println("Please enter a numeric value");
+                System.out.println(RED + "Please enter a numeric value" + RESET);
                 printOptionsUserRating();
                 continue;
             }
@@ -494,7 +497,7 @@ public class CliApp {
                     String title = sc.nextLine();
                     Optional<Movie> movieOpt = movieRepoJpa.findByTitle(title);
                     if (movieOpt.isEmpty()) {
-                        System.out.println("Movie not found. Press enter to continue to menu.");
+                        System.out.println(RED + "Movie not found. Press enter to continue to menu." + RESET);
                         continue;
                     }
 
@@ -511,7 +514,7 @@ public class CliApp {
                             rating = Double.parseDouble(rateString);  // or float/int depending on your method
                             validRating = true;
                         } else {
-                            System.out.println("Invalid input. Please enter an integer between 1 and 5.");
+                            System.out.println(RED + "Invalid input. Please enter an integer between 1 and 5." + RESET);
                         }
                     }
 
@@ -524,10 +527,10 @@ public class CliApp {
                             tx.begin();
                             userRatingRepoJpa.rateMovie(user, movie, finalRating);
                             tx.commit();   // 🔥 commit immediately, flush happens automatically
-                            System.out.println("You successfully rated the movie.");
+                            System.out.println(GREEN + "You successfully rated the movie." + RESET);
                         } catch (Exception e) {
                             if (tx.isActive()) tx.rollback();
-                            System.out.println("Failed to rate movie: " + e.getMessage());
+                            System.out.println(RED + "Failed to rate movie: " + e.getMessage() + RESET);
                         }
                         System.out.println("Press enter to continue back to menu.");
                         sc.nextLine();
@@ -542,9 +545,9 @@ public class CliApp {
                     List<Movie> ratedMovies = userRatingRepoJpa.getMoviesRatedByUser(user);
 
                     if (ratedMovies.isEmpty()) {
-                        System.out.println("You haven't rated any movies yet.");
+                        System.out.println(RED + "You haven't rated any movies yet." + RESET);
                     } else {
-                        System.out.println("Here are the movies you have rated: ");
+                        System.out.println(GREEN + "Here are the movies you have rated: " + RESET);
                         for (Movie m : ratedMovies) {
                             System.out.println("- " + m.getTitle() + " Rating: " + m.getRatings());
                         }
@@ -560,15 +563,15 @@ public class CliApp {
 
                     Optional<Movie> movieOpt = movieRepoJpa.findByTitle(title);
                     if (movieOpt.isEmpty()) {
-                        System.out.println("Movie not found. Press enter to continue to menu..");
+                        System.out.println(RED + "Movie not found. Press enter to continue to menu.." + RESET);
                         continue;
                     }
                     movieOpt.ifPresent(movie -> {
                         Optional<Double> rating = userRatingRepoJpa.getRatingForMovieByUser(user, movie);
                         if (rating.isPresent()) {
-                            System.out.println("Your rating for " + movie.getTitle() + " is: " + rating.get());
+                            System.out.println(GREEN + "Your rating for " + movie.getTitle() + " is: " + rating.get() + RESET);
                         } else {
-                            System.out.println("You have not rated this movie yet.");
+                            System.out.println(RED + "You have not rated this movie yet." + RESET);
                         }
                         System.out.println("Press enter to continue back to menu.");
                         sc.nextLine();
