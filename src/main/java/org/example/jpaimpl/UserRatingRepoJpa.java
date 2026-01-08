@@ -114,7 +114,9 @@ public class UserRatingRepoJpa implements UserRatingRepo {
             .setParameter("movie", movie)
             .getSingleResult();
 
-        movie.setRanking(avg);
+        Double rounded = avg != null ? Math.round(avg * 10.0) / 10.0 : null;
+
+        movie.setRanking(rounded);
         em.merge(movie);
 
         return true;

@@ -132,21 +132,10 @@ public class MovieRepoJpa implements MovieRepo {
 
 
     @Override
-    public List<Movie> getMovieByReleaseDate(String from, String to) {
-        if (from == null || to == null || from.isEmpty() || to.isEmpty()) return List.of();
+    public List<Movie> getMovieByReleaseDate(LocalDate from, LocalDate to) {
+        if (from == null || to == null) return List.of();
 
-        LocalDate fromDate;
-        LocalDate toDate;
-
-        try {
-            fromDate = LocalDate.parse(from, PLAIN_DATE);
-            toDate = LocalDate.parse(from, PLAIN_DATE);
-        } catch (DateTimeParseException e){
-            System.out.print("Invalid date format. Expected pattern: " + PLAIN_DATE);
-            return List.of();
-        }
-
-        if (fromDate.isAfter(toDate)) {
+        if (from.isAfter(to)) {
             System.out.println("From-date cannot be after to-date");
             return List.of();
         }
@@ -155,8 +144,8 @@ public class MovieRepoJpa implements MovieRepo {
             return em.createQuery(
                     "select m from Movie m where m.releaseDate between :from and :to order by m.releaseDate asc",
                     Movie.class)
-                .setParameter("from", fromDate)
-                .setParameter("to", toDate)
+                .setParameter("from", from)
+                .setParameter("to", to)
                 .getResultList();
         } catch (Exception e) {
             System.out.println("Error executing query: " + e.getMessage());
@@ -192,14 +181,13 @@ public class MovieRepoJpa implements MovieRepo {
     @Override
     public List<Movie> getMovieByLanguage(Language language) {
         if (language == null){
-            return List.of();
+            throw new IllegalArgumentException("Language cannot be null.");
         }
 
         return em.createQuery(
             "select m from Movie m where language = :language", Movie.class)
             .setParameter("language", language)
             .getResultList();
-
     }
 
     @Override

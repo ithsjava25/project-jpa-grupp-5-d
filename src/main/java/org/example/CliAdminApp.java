@@ -2,12 +2,14 @@ package org.example;
 import org.example.enums.Country;
 import org.example.enums.Language;
 import org.example.jpaimpl.*;
+import org.example.pojo.Genre;
 import org.example.pojo.User;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class CliAdminApp {
@@ -75,27 +77,32 @@ public class CliAdminApp {
                     String movie = sc.nextLine();
 
                     // --- Date ---
-                    LocalDate newDate = null;
+                    System.out.println("Enter release Date (YYYY-MM-DD or YYYYMMDD): ");
+                    String date = sc.nextLine().trim();
+                    LocalDate parsedDate;
+
                     try {
-                        System.out.println("Enter the date (YYYY-MM-DD):");
-                        newDate = LocalDate.parse(sc.nextLine().trim());
+                        if (date.matches("\\d{8}")) {
+                            date = date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6, 8);
+                        }
+                        parsedDate = LocalDate.parse(date);
                     } catch (DateTimeParseException e) {
-                        System.out.println("Invalid date format. Please use YYYY-MM-DD.");
-                        return; // stop early
+                        System.out.println("Invalid date format. " + e.getMessage() + ". Press Enter to continue.");
+                        continue;
                     }
 
                     // --- Length ---
-                    int newLength = -1;
+                    int length = -1;
                     try {
                         System.out.println("Enter the length in minutes:");
-                        newLength = Integer.parseInt(sc.nextLine().trim());
-                        if (newLength <= 0) {
+                        length = Integer.parseInt(sc.nextLine().trim());
+                        if (length < 0) {
                             System.out.println("Length must be a positive number.");
-                            return;
+                            System.exit(0);
                         }
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid length. Please enter a number.");
-                        return;
+                        System.exit(0);
                     }
 
                     // --- Country ---
@@ -119,11 +126,10 @@ public class CliAdminApp {
                     }
 
                     // --- Transaction ---
-                    LocalDate finalNewDate = newDate;
-                    int finalNewLength = newLength;
+                    int finalNewLength = length;
                     JpaRunner.runInTransaction(em -> {
                         MovieRepoJpa movieRepo = new MovieRepoJpa(em);
-                        movieRepo.addMovie(movie, finalNewDate, finalNewLength, newCountry, newLanguage);
+                        movieRepo.addMovie(movie, parsedDate, finalNewLength, newCountry, newLanguage);
                         System.out.println("Movie added!");
                     });
                 }
@@ -159,12 +165,15 @@ public class CliAdminApp {
                         ActorRepoJpa actorRepo = new ActorRepoJpa(em);
 
                         var actorOpt = actorRepo.findByName(actorName);
+                        var movieOpt = movieRepo.findByTitle(movieTitle);
                         if (actorOpt.isEmpty()) {
                             System.out.println("No actor found with name: " + actorName);
-                            return;
+                        } else if (movieOpt.isEmpty()) {
+                            System.out.println("No movie found with that title: " + movieTitle);
+                        } else {
+                            movieRepo.addActors(movieTitle, List.of(actorOpt.get()));
+                            System.out.println("Actor added to movie!");
                         }
-                        movieRepo.addActors(movieTitle, List.of(actorOpt.get()));
-                        System.out.println("Actor added to movie!");
                     });
                 }
                 // ADD A DIRECTOR TO A MOVIE
@@ -180,13 +189,15 @@ public class CliAdminApp {
                         DirectorRepoJpa directorRepo = new DirectorRepoJpa(em);
 
                         var directorOpt = directorRepo.findByName(directorName);
+                        var movieOpt = movieRepo.findByTitle(movieTitle);
                         if (directorOpt.isEmpty()) {
-                            System.out.println("No director found with name: " + directorName);
-                            return;
+                            System.out.println("No actor found with name: " + directorName);
+                        } else if (movieOpt.isEmpty()) {
+                            System.out.println("No movie found with that title: " + movieTitle);
+                        } else {
+                            movieRepo.setDirector(movieTitle, directorOpt.get());
+                            System.out.println("Director '" + directorName + "' set for movie '" + movieTitle + "'!");
                         }
-
-                        movieRepo.setDirector(movieTitle, directorOpt.get());
-                        System.out.println("Director '" + directorName + "' set for movie '" + movieTitle + "'!");
                     });
                 }
                 // ADD A NEW GENRE
@@ -207,28 +218,37 @@ public class CliAdminApp {
                 }
                 // DELETE A GENRE
                 case 8 -> {
-                    System.out.print("Enter genreId to delete: ");
-                    String genreIdString = sc.nextLine();
+                    System.out.print("Enter genre name to delete: ");
+                    String genreName = sc.nextLine();
 
-                    long genreId;
-                    try {
-                        genreId = Long.parseLong(genreIdString);
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid input. Please enter a numeric value instead of: " + genreIdString);
-                        break;
-                    }
-
-                    long finalGenreId = genreId;
                     JpaRunner.runInTransaction(em -> {
                         GenreRepoJpa genreRepo = new GenreRepoJpa(em);
-                        boolean deleted = genreRepo.deleteGenre(finalGenreId);
-                        System.out.println(deleted ? "Genre deleted!" : "Genre not found.");
+                        Optional<Genre> genreOpt = genreRepo.findByName(genreName);
+
+                        if (genreOpt.isEmpty()) {
+                            System.out.println("No genre found with name: " + genreName);
+                            return; // exit the transaction block
+                        }
+
+                        Genre genre = genreOpt.get();
+                        long id = genre.getGenreID();
+                        if (genreRepo.deleteGenre(id)) {
+                            System.out.println("Genre with ID " + id + " is deleted.");
+                        } else {
+                            System.out.println("Something went wrong with delete method.");
+                        }
                     });
                 }
                 // ADD A NEW ACTOR
                 case 9 -> {
                     System.out.println("Enter actor name:");
                     String actorName = sc.nextLine().trim();
+
+                    // Kolla så att namn inte innehåller ottilåtna tecken.
+                    if (!actorName.matches("^[A-Za-z]+( [A-Za-z]+){1,}$")) {
+                        System.out.println("Invalid name format. Please enter (at least) first and last name.");
+                        break;
+                    }
 
                     System.out.println("Enter country:");
                     String countryInput = sc.nextLine().trim().toUpperCase();
@@ -272,6 +292,12 @@ public class CliAdminApp {
                 case 11 -> {
                     System.out.println("Enter director name:");
                     String directorName = sc.nextLine().trim();
+
+                    // Kolla så att namn inte innehåller ottilåtna tecken.
+                    if (!directorName.matches("^[A-Za-z]+( [A-Za-z]+){1,}$")) {
+                        System.out.println("Invalid name format. Please enter (at least) first and last name.");
+                        break;
+                    }
 
                     System.out.println("Enter country:");
                     String countryInput = sc.nextLine().trim().toUpperCase();
@@ -339,11 +365,6 @@ public class CliAdminApp {
                 }
                 default -> System.out.println("Invalid option");
             }
-
-            // ✅ Always show menu again unless exiting
-            if (running) {
-                printOptions();
-            }
         }
     }
 
@@ -351,17 +372,17 @@ public class CliAdminApp {
         System.out.println("""
                 =============ADMIN MENU=============
                 1. Add new user (userName, password)
-                2. Delete user (userId)
+                2. Delete user (userName)
                 3. Add a new movie (title, date YYYY-MM-DD, length in minutes, country, language)
-                4. Delete movie (id)
-                5. Add an actor to a movie (movieId, actorId) OR (movie, actor)
+                4. Delete movie (title)
+                5. Add an actor to a movie (actor name & movie title)
                 6. Add a director to a movie (movieId, directorId)
                 7. Add a new Genre (genreName)
                 8. Delete a genre (genreId)
                 9. Add a new actor (actorname, country)
-                10. Delete an actor (id)
+                10. Delete an actor (actor name)
                 11. Add a new Director (directorName, country)
-                12. Delete a director (id)
+                12. Delete a director (director name)
                 13. Find users by username (userName)
                 0. Exit
                 """);

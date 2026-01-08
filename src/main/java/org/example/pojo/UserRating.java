@@ -12,7 +12,7 @@ public class UserRating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private double rating;
+    private Double rating;
 
     // Relational fields
     @ManyToOne
@@ -52,7 +52,7 @@ public class UserRating {
     public double getRating() {
         return rating;
     }
-    public void setRating(double rating) {
+    public void setRating(Double rating) {
         this.rating = rating;
     }
 
