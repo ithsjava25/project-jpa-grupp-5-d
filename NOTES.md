@@ -69,7 +69,8 @@ TODO:
 
 ## User rating prints org.example.entity.userRating all ratings - many-to-many
 ## list all movies - println
-## Menu is still gets printed doubled
+## Menu still gets printed doubled
+    LÖST typ
 
 IMDB - variant
 
