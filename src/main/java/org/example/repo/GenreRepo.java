@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface GenreRepo {
 
-    boolean addGenre(String genreName);
+    Genre addGenre(String genreName);
     boolean deleteGenre(long genreID);
     List<Genre> getAllGenres();
 
