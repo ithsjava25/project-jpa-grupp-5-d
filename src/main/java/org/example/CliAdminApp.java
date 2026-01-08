@@ -216,11 +216,16 @@ public class CliAdminApp {
 
                     JpaRunner.runInTransaction(em -> {
                         GenreRepoJpa genreRepo = new GenreRepoJpa(em);
-                        if (genreRepo.addGenre(genre)) {
+
+                        boolean existedBefore = genreRepo.exists(genre);
+
+                        if (!existedBefore) {
                             System.out.println(GREEN + "Genre '" + genre + "' added!" + RESET);
+                            genreRepo.addGenre(genre);
                         } else {
                             System.out.println(RED + "The genre: '" + genre + "' already exist." + RESET);
                         }
+
                     });
                 }
                 // DELETE A GENRE

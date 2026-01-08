@@ -29,6 +29,10 @@ public class GenreRepoJpa implements GenreRepo {
         }
     }
 
+    public boolean exists(String genreName) {
+        return findByName(genreName).isPresent();
+    }
+
 
     @Override
     public boolean deleteGenre(long genreID){
