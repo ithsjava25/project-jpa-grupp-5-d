@@ -242,14 +242,17 @@ public class CliApp {
                         int minRankInt = Integer.parseInt(minRank);
                         if (minRankInt < 1 || minRankInt > 5){
                             System.out.println(RED + "Invalid minimum ranking. Please enter a value between 1 and 5" + RESET);
+                            continue;
                         }
                         int maxRankInt = Integer.parseInt(maxRank);
                         if (maxRankInt < 1 || maxRankInt > 5){
                             System.out.println(RED + "Invalid maximum ranking. Please enter a value between 1 and 5" + RESET);
+                            continue;
                         }
 
                         if (minRankInt > maxRankInt) {
                             System.out.println(RED + "Minimum ranking cannot be higher than maxmimum ranking" + RESET);
+                            continue;
                         }
 
                         movieRepoJpa.getMovieByRanking(minRankInt, maxRankInt)
@@ -531,14 +534,14 @@ public class CliApp {
                 case 2 -> {
                     System.out.println("***** You want to get all the movies that you rated *****");
 
-                    List<Movie> ratedMovies = userRatingRepoJpa.getMoviesRatedByUser(user);
+                    List<UserRating> ratings = userRatingRepoJpa.getRatingsByUser(user);
 
-                    if (ratedMovies.isEmpty()) {
+                    if (ratings.isEmpty()) {
                         System.out.println(RED + "You haven't rated any movies yet." + RESET);
                     } else {
                         System.out.println(GREEN + "Here are the movies you have rated: " + RESET);
-                        for (Movie m : ratedMovies) {
-                            System.out.println("- " + m.getTitle() + " Rating: " + m.getRatings());
+                        for (UserRating ur : ratings) {
+                            System.out.println(GREEN + "- " + ur.getMovie().getTitle() + " Rating: " + ur.getRating() + RESET);
                         }
                     }
                     System.out.println("Press enter to continue back to menu.");

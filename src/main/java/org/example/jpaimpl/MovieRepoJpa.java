@@ -103,7 +103,6 @@ public class MovieRepoJpa implements MovieRepo {
             .setParameter("title", title.trim())
             .getResultStream()
             .findFirst();
-
     }
 
     @Override
