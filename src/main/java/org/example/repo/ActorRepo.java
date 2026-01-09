@@ -14,4 +14,5 @@ public interface ActorRepo {
 
     Optional<Actor> findById(Long id);
     Optional<Actor> findByName (String actorName);
+    boolean deleteByName(String name);
 }

@@ -102,11 +102,11 @@ public class CliAdminApp {
                         length = Integer.parseInt(sc.nextLine().trim());
                         if (length < 0) {
                             System.out.println(RED + "Length must be a positive number." + RESET);
-                            return;
+                            break;
                         }
                     } catch (NumberFormatException e) {
                         System.out.println(RED + "Invalid length. Please enter a number." + RESET);
-                        return;
+                        continue;
                     }
 
                     // --- Country ---
@@ -116,7 +116,7 @@ public class CliAdminApp {
                         newCountry = Country.valueOf(sc.nextLine().trim().toUpperCase());
                     } catch (IllegalArgumentException e) {
                         System.out.println(RED + "Invalid country. Please enter one of: " + Arrays.toString(Country.values()) + RESET);
-                        return;
+                        break;
                     }
 
                     // --- Language ---
@@ -126,7 +126,7 @@ public class CliAdminApp {
                         newLanguage = Language.valueOf(sc.nextLine().trim().toUpperCase());
                     } catch (IllegalArgumentException e) {
                         System.out.println(RED + "Invalid language. Please enter one of: " + Arrays.toString(Language.values()) + RESET);
-                        return;
+                        break;
                     }
 
                     // --- Transaction ---
@@ -194,7 +194,7 @@ public class CliAdminApp {
                         var directorOpt = directorRepo.findByName(directorName);
                         var movieOpt = movieRepo.findByTitle(movieTitle);
                         if (directorOpt.isEmpty()) {
-                            System.out.println(RED + "No actor found with name: " + directorName + RESET);
+                            System.out.println(RED + "No director found with name: " + directorName + RESET);
                         } else if (movieOpt.isEmpty()) {
                             System.out.println(RED + "No movie found with that title: " + movieTitle + RESET);
                         } else {

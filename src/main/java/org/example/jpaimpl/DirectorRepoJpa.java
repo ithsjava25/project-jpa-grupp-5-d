@@ -53,11 +53,11 @@ public class DirectorRepoJpa implements DirectorRepo {
             .orElse(null);
 
         if (director == null) {
-            return false; // ingen actor hittades
+            return false; // ingen director hittades
         }
 
         em.remove(director);
-        return true; // actor togs bort
+        return true; // director togs bort
     }
 
     @Override
