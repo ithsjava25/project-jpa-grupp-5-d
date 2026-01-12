@@ -23,6 +23,7 @@ public class App {
                 System.out.println("Database already contains movies. If other data is missing disable function and run filler.seedAll()");
             }
         });
+
         // ✅ Öppna en EM för CLI
         try (EntityManager em = JpaUtil.getEntityManager()) {
             UserRepoJpa userRepoJpa = new UserRepoJpa(em);
